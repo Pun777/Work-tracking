@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ปฏิทิน - ระบบติดตามงาน</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+    <header>
+        <h1>ปฏิทินงาน</h1>
+    </header>
+
+    <main class="calendar-page">
+        <section>
+            <h2>รายการงานตามวัน</h2>
+            <div class="calendar-list" id="calendar-list">
+                <!-- งานจะแสดงที่นี่ -->
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p><a href="index.html">← กลับหน้าแรก</a></p>
+    </footer>
+
+    <script>
+        const SHEET_URL = 'https://script.google.com/macros/s/AKfycbyvt2o4xH-ORSqxJtsSxQbg8pOZ2Vc7o2_HmS_JScM3Ny47QQymckKN2LRVYTZizEux/exec';
+
+        fetch(SHEET_URL)
+            .then(res => res.json())
+            .then(tasks => {
+                const container = document.getElementById('calendar-list');
+                tasks.forEach(t => {
+                    const card = document.createElement('div');
+                    card.className = 'calendar-card';
+                    card.innerHTML = `
+        <strong>${t["วันที่เริ่มงาน"]}</strong><br/>
+        <b>${t["ชื่อโปรเจค"]}</b>: ${t["งานที่ต้องทำ"]}<br/>
+        ผู้รับผิดชอบ: ${t["ผู้รับผิดชอบ"]}
+      `;
+                    container.appendChild(card);
+                });
+            })
+            .catch(err => {
+                console.error('โหลดข้อมูลล้มเหลว:', err);
+            });
+    </script>
+
+</body>
+
+</html>
