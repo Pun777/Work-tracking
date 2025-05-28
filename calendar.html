@@ -1,27 +1,22 @@
+<!-- calendar.html -->
 <!DOCTYPE html>
 <html lang="th">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ปฏิทิน - ระบบติดตามงาน</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>Calendar</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
+  <style>
+    body { font-family: sans-serif; padding: 2rem; background: #f0f0f0; }
+    h2 { text-align: center; color: #333; }
+    #calendar { max-width: 900px; margin: 2rem auto; background: white; padding: 1rem; border-radius: 6px; box-shadow: 0 0 5px rgba(0,0,0,0.1); }
+  </style>
 </head>
 <body>
-  <header class="menu-header">
-    <h1>ปฏิทินงานรายเดือน</h1>
-  </header>
-
-  <main class="calendar-page">
-    <div id="month-label" class="month-label">...</div>
-    <div class="calendar-grid" id="calendar-grid">
-      <!-- ตารางจะถูกสร้างโดย JS -->
-    </div>
-  </main>
-
-  <footer>
-    <p><a href="index.html">← กลับหน้าแรก</a></p>
-  </footer>
-
-  <script src="calendar.js"></script>
+  <h2>ปฏิทินงาน</h2>
+  <div id="calendar"></div>
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+  <script src="js/calendar.js"></script>
 </body>
 </html>

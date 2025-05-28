@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>รายการงาน</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f9f9f9;
+      padding: 2rem;
+      color: #333;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    th, td {
+      padding: 0.75rem;
+      border: 1px solid #ddd;
+      text-align: center;
+    }
+    th {
+      background: #007bff;
+      color: white;
+    }
+    .status {
+      font-weight: bold;
+      border-radius: 4px;
+      padding: 0.25rem 0.5rem;
+      display: inline-block;
+    }
+    .status.start { background: #fff9c4; }
+    .status.ongoing { background: #dcedc8; }
+    .status.done { background: #c8e6c9; }
+    .progress-bar {
+      height: 16px;
+      background: #e0e0e0;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: #007bff;
+    }
+    button {
+      margin-top: 1rem;
+      padding: 0.5rem 1rem;
+      background-color: green;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .delete-btn {
+      color: red;
+      cursor: pointer;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+<h2>รายการงาน</h2>
+
+<input type="text" id="search" placeholder="ค้นหาชื่องาน..." style="padding: 0.5rem; margin-bottom: 1rem; width: 100%; max-width: 300px;">
+<button onclick="addTask()">➕ เพิ่มงานใหม่</button>
+
+<table>
+  <thead>
+    <tr>
+      <th>ชื่อโปรเจกต์</th>
+      <th>วันเริ่มต้น</th>
+      <th>วันสิ้นสุด</th>
+      <th>ระยะเวลา (วัน)</th>
+      <th>% ความคืบหน้า</th>
+      <th>Progress</th>
+      <th>สถานะ</th>
+      <th>ลบ</th>
+    </tr>
+  </thead>
+  <tbody id="taskTable"></tbody>
+</table>
+
+<script>
+let tasks = [
+  {
+    project: "การบ้าน",
+    startDate: "2025-05-25",
+    endDate: "2025-05-30",
+    duration: 5,
+    progressPercent: 0,
+    status: "ยังไม่เริ่มงาน"
+  },
+  {
+    project: "ขายโปรเจค",
+    startDate: "2025-05-27",
+    endDate: "2025-05-31",
+    duration: 4,
+    progressPercent: 100,
+    status: "อยู่ในกำหนด"
+  }
+];
+
+const tbody = document.getElementById("taskTable");
+
+function renderTasks(data) {
+  tbody.innerHTML = "";
+  data.forEach((task, index) => {
+    const tr = document.createElement("tr");
+    const statusClass = task.status.includes("ยังไม่เริ่ม") ? "start"
+                      : task.status.includes("อยู่ในกำหนด") ? "ongoing"
+                      : "done";
+    tr.innerHTML = `
+      <td>${task.project}</td>
+      <td>${new Date(task.startDate).toLocaleDateString()}</td>
+      <td>${new Date(task.endDate).toLocaleDateString()}</td>
+      <td>${task.duration}</td>
+      <td>${task.progressPercent.toFixed(2)}%</td>
+      <td><div class="progress-bar"><div class="progress-fill" style="width: ${Math.min(task.progressPercent, 100)}%"></div></div></td>
+      <td><span class="status ${statusClass}">${task.status}</span></td>
+      <td><span class="delete-btn" onclick="deleteTask(${index})">🗑️</span></td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function addTask() {
+  const project = prompt("ชื่อโปรเจกต์:");
+  const start = prompt("วันเริ่มต้น (YYYY-MM-DD):");
+  const end = prompt("วันสิ้นสุด (YYYY-MM-DD):");
+  const duration = Math.ceil((new Date(end) - new Date(start)) / (1000 * 60 * 60 * 24));
+  const progress = Number(prompt("% ความคืบหน้า:", 0));
+  const status = prompt("สถานะ (เช่น ยังไม่เริ่มงาน / อยู่ในกำหนด):");
+
+  const newTask = { project, startDate: start, endDate: end, duration, progressPercent: progress, status };
+  tasks.push(newTask);
+  renderTasks(tasks);
+
+  // 🔁 ส่งไปยัง Google Sheet
+  fetch("https://script.google.com/macros/s/AKfycbyM-OkQ3hlpe_s7WVZbp6Xpdv0ht0lqYJfdCJm71u7PRssVU6pFuEAr-lMIiqF9JStw/exec", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(newTask)
+  })
+  .then(res => res.text())
+  .then(msg => alert("✅ บันทึกไปยัง Google Sheet แล้ว: " + msg))
+  .catch(err => alert("❌ Error: " + err.message));
+}
+
+function deleteTask(index) {
+  if (confirm("ยืนยันลบงานนี้?")) {
+    tasks.splice(index, 1);
+    renderTasks(tasks);
+  }
+}
+
+renderTasks(tasks);
+
+document.getElementById("search").addEventListener("input", (e) => {
+  const keyword = e.target.value.toLowerCase();
+  const filtered = tasks.filter(t => t.project.toLowerCase().includes(keyword));
+  renderTasks(filtered);
+});
+</script>
+</body>
+</html>

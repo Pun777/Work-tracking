@@ -1,42 +1,62 @@
+
+<!-- index.html -->
 <!DOCTYPE html>
 <html lang="th">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>เมนูหลัก - ระบบติดตามงาน</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>Work Tracker - เมนูหลัก</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f9f9f9;
+    }
+    header {
+      background-color: #0077cc;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+    }
+    nav ul {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      background-color: #005fa3;
+      padding: 0.5rem;
+      list-style: none;
+      margin: 0;
+    }
+    nav a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    nav a:hover {
+      text-decoration: underline;
+    }
+    main {
+      padding: 2rem;
+      text-align: center;
+    }
+  </style>
 </head>
 <body>
-
-  <header class="menu-header">
-    <h1>ติดตามงาน</h1>
-    <p>โดย บริหารงานแบบคนไอที</p>
+  <header>
+    <h1>ระบบติดตามงาน</h1>
   </header>
-
-  <section class="banner">
-    <img src="it-support.png" alt="IT SUPPORT" />
-  </section>
-
-  <main class="menu-wrapper">
-    <div class="menu-title">เมนู</div>
-
-    <div class="menu-boxes">
-      <div class="menu-column">
-        <h3>📊 รายงาน</h3>
-        <a href="dashboard.html" class="menu-button">Dashboard view</a>
-        <a href="calendar.html" class="menu-button">Calendar view</a>
-      </div>
-      <div class="menu-column">
-        <h3>🔍 กรองข้อมูล</h3>
-        <a href="project-overview.html" class="menu-button">หน้าโปรเจคหลัก</a>
-        <a href="task-detail.html" class="menu-button">หน้ารายละเอียดงาน</a>
-      </div>
-    </div>
+  <nav>
+    <ul>
+      <li><a href="dashboard.html">Dashboard</a></li>
+      <li><a href="tasklist.html">Task List</a></li>
+      <li><a href="calendar.html">Calendar</a></li>
+      <li><a href="settings.html">Project List</a></li>
+    </ul>
+  </nav>
+  <main>
+    <p>ยินดีต้อนรับสู่ระบบติดตามงาน</p>
   </main>
-
-  <footer>
-    <p>© 2025 ระบบติดตามงาน</p>
-  </footer>
-
 </body>
 </html>
