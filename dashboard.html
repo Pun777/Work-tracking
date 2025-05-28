@@ -5,23 +5,31 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>แดชบอร์ด - ระบบติดตามงาน</title>
   <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <header>
+  <header class="menu-header">
     <h1>แดชบอร์ด</h1>
   </header>
 
-  <main class="dashboard">
-    <section class="summary">
+  <main class="dashboard-page">
+    <div class="dashboard-controls">
+      <label for="project-select">เลือกโปรเจค:</label>
+      <select id="project-select">
+        <!-- ชื่อโปรเจคจะถูกเติมโดย JS -->
+      </select>
+    </div>
+
+    <div class="dashboard-summary">
       <div class="card green">
         <h3>งานทั้งหมด</h3>
         <p id="total">-</p>
       </div>
       <div class="card blue">
         <h3>อยู่ในกำหนด</h3>
-        <p id="in-progress">-</p>
+        <p id="in-time">-</p>
       </div>
-      <div class="card orange">
+      <div class="card red">
         <h3>เกินกำหนด</h3>
         <p id="late">-</p>
       </div>
@@ -29,10 +37,12 @@
         <h3>เสร็จแล้ว</h3>
         <p id="done">-</p>
       </div>
-    </section>
+    </div>
+
+    <canvas id="responsible-chart" height="120"></canvas>
 
     <section class="table-section">
-      <h2>รายการงานทั้งหมด</h2>
+      <h2>รายละเอียดงาน</h2>
       <div class="table-scroll">
         <table>
           <thead>
@@ -41,11 +51,13 @@
               <th>งาน</th>
               <th>ผู้รับผิดชอบ</th>
               <th>% ความคืบหน้า</th>
+              <th>วันที่เริ่ม</th>
+              <th>วันที่สิ้นสุด</th>
               <th>สถานะ</th>
             </tr>
           </thead>
           <tbody id="task-table-body">
-            <!-- ข้อมูลจะถูกเติมโดย JavaScript -->
+            <!-- ข้อมูลจะแสดงที่นี่ -->
           </tbody>
         </table>
       </div>
@@ -56,44 +68,6 @@
     <p><a href="index.html">← กลับหน้าแรก</a></p>
   </footer>
 
-  <script>
-    // Sample data mock (เชื่อม Google Sheet ได้ในภายหลัง)
-    const tasks = [
-      { project: 'โปรเจค A', task: 'ออกแบบ', owner: 'สมชาย', progress: 70, status: 'อยู่ในกำหนด' },
-      { project: 'โปรเจค B', task: 'พัฒนา', owner: 'สมหญิง', progress: 100, status: 'เสร็จแล้ว' },
-      { project: 'โปรเจค C', task: 'ตรวจสอบ', owner: 'สมปอง', progress: 40, status: 'เกินกำหนด' },
-    ];
-
-    const statusMap = {
-      'อยู่ในกำหนด': '🟢',
-      'เกินกำหนด': '🔴',
-      'เสร็จแล้ว': '✅',
-    };
-
-    const body = document.getElementById('task-table-body');
-    const count = { total: 0, inProgress: 0, late: 0, done: 0 };
-
-    tasks.forEach(t => {
-      count.total++;
-      if (t.status === 'เสร็จแล้ว') count.done++;
-      else if (t.status === 'อยู่ในกำหนด') count.inProgress++;
-      else if (t.status === 'เกินกำหนด') count.late++;
-
-      body.innerHTML += `
-        <tr>
-          <td>${t.project}</td>
-          <td>${t.task}</td>
-          <td>${t.owner}</td>
-          <td>${t.progress}%</td>
-          <td>${statusMap[t.status]} ${t.status}</td>
-        </tr>
-      `;
-    });
-
-    document.getElementById('total').textContent = count.total;
-    document.getElementById('in-progress').textContent = count.inProgress;
-    document.getElementById('late').textContent = count.late;
-    document.getElementById('done').textContent = count.done;
-  </script>
+  <script src="dashboard.js"></script>
 </body>
 </html>
