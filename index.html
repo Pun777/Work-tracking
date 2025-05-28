@@ -3,27 +3,40 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ระบบติดตามงาน</title>
+  <title>เมนูหลัก - ระบบติดตามงาน</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <header>
-    <h1>ระบบติดตามงาน</h1>
+
+  <header class="menu-header">
+    <h1>ติดตามงาน</h1>
+    <p>โดย บริหารงานแบบคนไอที</p>
   </header>
 
-  <main class="menu">
-    <a href="dashboard.html" class="menu-card">
-      <h2>แดชบอร์ด</h2>
-      <p>ดูภาพรวมของโปรเจกต์และงานทั้งหมด</p>
-    </a>
-    <a href="calendar.html" class="menu-card">
-      <h2>ปฏิทิน</h2>
-      <p>ดูตารางงานตามวันที่เริ่ม-สิ้นสุด</p>
-    </a>
+  <section class="banner">
+    <img src="it-support.png" alt="IT SUPPORT" />
+  </section>
+
+  <main class="menu-wrapper">
+    <div class="menu-title">เมนู</div>
+
+    <div class="menu-boxes">
+      <div class="menu-column">
+        <h3>📊 รายงาน</h3>
+        <a href="dashboard.html" class="menu-button">Dashboard view</a>
+        <a href="calendar.html" class="menu-button">Calendar view</a>
+      </div>
+      <div class="menu-column">
+        <h3>🔍 กรองข้อมูล</h3>
+        <a href="project-overview.html" class="menu-button">หน้าโปรเจคหลัก</a>
+        <a href="task-detail.html" class="menu-button">หน้ารายละเอียดงาน</a>
+      </div>
+    </div>
   </main>
 
   <footer>
     <p>© 2025 ระบบติดตามงาน</p>
   </footer>
+
 </body>
 </html>

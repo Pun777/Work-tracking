@@ -1,97 +1,63 @@
-body {
-  font-family: 'Segoe UI', sans-serif;
-  background: #f4f4f4;
-  margin: 0;
-  padding: 0;
-  color: #333;
+.menu-wrapper {
+  background: #e3f2fd;
+  padding: 2rem;
+  text-align: center;
 }
 
-header, footer {
+.menu-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 1.5rem;
   background: #1976d2;
   color: white;
-  text-align: center;
-  padding: 1rem;
+  padding: 0.5rem 1rem;
+  display: inline-block;
+  border-radius: 6px;
 }
 
-.menu {
+.menu-boxes {
   display: flex;
   flex-wrap: wrap;
-  gap: 1.5rem;
   justify-content: center;
-  padding: 2rem;
+  gap: 2rem;
+  margin-top: 1rem;
 }
 
-.menu-card {
-  background: white;
-  padding: 1.5rem;
+.menu-column {
+  min-width: 240px;
+  background: #fff8f8;
   border-radius: 12px;
-  width: 280px;
-  text-align: center;
-  text-decoration: none;
+  border: 1px solid #ddd;
+  padding: 1rem 1.5rem;
+  box-shadow: 0 0 5px rgba(0,0,0,0.05);
+}
+
+.menu-column h3 {
+  border-bottom: 2px solid #ccc;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.menu-button {
+  display: block;
+  margin-bottom: 0.75rem;
+  background: white;
   color: #1976d2;
+  text-decoration: none;
   border: 2px solid #1976d2;
-  transition: 0.3s ease;
-}
-
-.menu-card:hover {
-  background: #e3f2fd;
-  transform: translateY(-3px);
-}
-.dashboard {
-  padding: 2rem;
-}
-
-.summary {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  justify-content: space-between;
-  margin-bottom: 2rem;
-}
-
-.card {
-  flex: 1 1 180px;
-  padding: 1rem;
-  color: white;
-  border-radius: 10px;
-  text-align: center;
-  font-size: 1.2rem;
-}
-
-.card.green { background: #4caf50; }
-.card.blue { background: #2196f3; }
-.card.orange { background: #ff9800; }
-.card.gray { background: #607d8b; }
-
-.table-scroll {
-  overflow-x: auto;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: white;
-}
-
-th, td {
-  padding: 0.75rem;
-  text-align: left;
-  border-bottom: 1px solid #ccc;
-}
-.calendar-page {
-  padding: 2rem;
-}
-
-.calendar-list {
-  display: grid;
-  gap: 1rem;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-}
-
-.calendar-card {
-  background: white;
-  border-left: 6px solid #1976d2;
-  padding: 1rem;
   border-radius: 8px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  padding: 0.75rem;
+  transition: 0.2s ease;
+}
+
+.menu-button:hover {
+  background: #e3f2fd;
+  transform: scale(1.03);
+}
+
+@media (max-width: 600px) {
+  .menu-boxes {
+    flex-direction: column;
+    align-items: center;
+  }
 }
