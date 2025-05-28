@@ -1,5 +1,5 @@
-const SHEET_URL =
-  "https://script.google.com/macros/s/AKfycbyvt2o4xH-ORSqxJtsSxQbg8pOZ2Vc7o2_HmS_JScM3Ny47QQymckKN2LRVYTZizEux/exec";
+const SHEET_URL = 'https://script.google.com/macros/s/AKfycbyvt2o4xH-ORSqxJtsSxQbg8pOZ2Vc7o2_HmS_JScM3Ny47QQymckKN2LRVYTZizEux/exec';
+
 
 fetch(SHEET_URL)
   .then((res) => res.json())
