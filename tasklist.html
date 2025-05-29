@@ -1,175 +1,354 @@
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>รายการงาน</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Task List</title>
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #f9f9f9;
+      font-family: sans-serif;
       padding: 2rem;
-      color: #333;
+      background: #f9f9f9;
     }
+
     h2 {
       text-align: center;
       margin-bottom: 1rem;
     }
+
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    input[type="text"] {
+      padding: 0.5rem;
+      font-size: 1rem;
+      width: 250px;
+    }
+
+    button {
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      cursor: pointer;
+      border-radius: 6px;
+      border: none;
+      background-color: #007bff;
+      color: white;
+    }
+
     table {
       width: 100%;
       border-collapse: collapse;
-      background: #fff;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
-      border-radius: 6px;
+      background: white;
+      border-radius: 8px;
       overflow: hidden;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     }
-    th, td {
+
+    th,
+    td {
+      border: 1px solid #ccc;
       padding: 0.75rem;
-      border: 1px solid #ddd;
       text-align: center;
     }
+
     th {
       background: #007bff;
       color: white;
     }
-    .status {
-      font-weight: bold;
-      border-radius: 4px;
-      padding: 0.25rem 0.5rem;
-      display: inline-block;
-    }
-    .status.start { background: #fff9c4; }
-    .status.ongoing { background: #dcedc8; }
-    .status.done { background: #c8e6c9; }
+
     .progress-bar {
-      height: 16px;
-      background: #e0e0e0;
+      height: 1rem;
+      background-color: #ddd;
       border-radius: 4px;
       overflow: hidden;
     }
+
     .progress-fill {
       height: 100%;
-      background: #007bff;
+      transition: width 0.3s;
     }
-    button {
-      margin-top: 1rem;
-      padding: 0.5rem 1rem;
-      background-color: green;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
+
+    .fill-low {
+      background-color: #ff9800;
     }
-    .delete-btn {
-      color: red;
-      cursor: pointer;
+
+    .fill-medium {
+      background-color: #ffc107;
+    }
+
+    .fill-high {
+      background-color: #4caf50;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 500px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .modal-content input,
+    .modal-content select {
+      padding: 1rem;
+      font-size: 1.05rem;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .modal-content .button-group {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .modal-content button[type="submit"],
+    .modal-content button[type="button"] {
+      padding: 0.8rem;
+      font-size: 1rem;
       font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    .modal-content button[type="submit"] {
+      background-color: #28a745;
+      color: white;
+    }
+
+    .modal-content button[type="button"] {
+      background-color: #dc3545;
+      color: white;
+    }
+
+    body {
+      font-family: sans-serif;
+      padding: 2rem;
+      background: #f0fff4;
+      margin: 0;
     }
   </style>
+  <header style="background-color: #0275d8; color: white; padding: 1rem; text-align: center;">
+    <h1>ระบบติดตามงาน</h1>
+  </header>
+
+  <nav style="background-color: #01549b; text-align: center; padding: 0.5rem;">
+    <a href="dashboard.html"
+      style="margin: 0 1rem; color: white; font-weight: bold; text-decoration: none;">Dashboard</a>
+    <a href="tasklist.html" style="margin: 0 1rem; color: white; font-weight: bold; text-decoration: none;">Task
+      List</a>
+    <a href="calendar.html" style="margin: 0 1rem; color: white; font-weight: bold; text-decoration: none;">Calendar</a>
+
+
+  </nav>
+
+
 </head>
+
 <body>
 
-<h2>รายการงาน</h2>
+  <h2>รายการงาน</h2>
 
-<input type="text" id="search" placeholder="ค้นหาชื่องาน..." style="padding: 0.5rem; margin-bottom: 1rem; width: 100%; max-width: 300px;">
-<button onclick="addTask()">➕ เพิ่มงานใหม่</button>
+  <div class="controls">
+    <input type="text" id="searchInput" placeholder="ค้นหาโปรเจกต์...">
+    <button id="openModal">➕ เพิ่มงานใหม่</button>
+  </div>
 
-<table>
-  <thead>
-    <tr>
-      <th>ชื่อโปรเจกต์</th>
-      <th>วันเริ่มต้น</th>
-      <th>วันสิ้นสุด</th>
-      <th>ระยะเวลา (วัน)</th>
-      <th>% ความคืบหน้า</th>
-      <th>Progress</th>
-      <th>สถานะ</th>
-      <th>ลบ</th>
-    </tr>
-  </thead>
-  <tbody id="taskTable"></tbody>
-</table>
+  <div class="modal" id="taskModal">
+    <div class="modal-content">
+      <form id="taskForm">
+        <input name="project" placeholder="ชื่อโปรเจกต์" required>
+        <input name="taskName" placeholder="งานที่ทำ" required>
+        <input name="assigneeName" placeholder="ชื่อผู้รับผิดชอบ" required>
+        <input name="department" placeholder="แผนก" required>
+        <input name="startDate" type="date" required>
+        <input name="endDate" type="date" required>
+        <input name="progressPercent" type="number" min="0" max="100" placeholder="% ความคืบหน้า" required>
+        <select name="status" required>
+          <option value="เสร็จสิ้น">✅ เสร็จสิ้น</option>
+          <option value="อยู่ในกำหนด">⚠️ อยู่ในกำหนด</option>
+          <option value="เสร็จไม่ทัน">❌ เสร็จไม่ทัน</option>
+        </select>
+        <div class="button-group">
+          <button type="submit">บันทึก</button>
+          <button type="button" id="cancelModal">ยกเลิก</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
-<script>
-let tasks = [
-  {
-    project: "การบ้าน",
-    startDate: "2025-05-25",
-    endDate: "2025-05-30",
-    duration: 5,
-    progressPercent: 0,
-    status: "ยังไม่เริ่มงาน"
-  },
-  {
-    project: "ขายโปรเจค",
-    startDate: "2025-05-27",
-    endDate: "2025-05-31",
-    duration: 4,
-    progressPercent: 100,
-    status: "อยู่ในกำหนด"
-  }
-];
+  <table>
+    <thead>
+      <tr>
+        <th>ชื่อโปรเจกต์</th>
+        <th>งานที่ทำ</th>
+        <th>ผู้รับผิดชอบ</th>
+        <th>วันเริ่มต้น</th>
+        <th>วันสิ้นสุด</th>
+        <th>ระยะเวลา (วัน)</th>
+        <th>% ความคืบหน้า</th>
+        <th>Progress</th>
+        <th>สถานะ</th>
+        <th>จัดการ</th>
+      </tr>
+    </thead>
+    <tbody id="taskTable"></tbody>
+  </table>
 
-const tbody = document.getElementById("taskTable");
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+    import { getDatabase, ref, push, update, remove, onValue } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
 
-function renderTasks(data) {
-  tbody.innerHTML = "";
-  data.forEach((task, index) => {
-    const tr = document.createElement("tr");
-    const statusClass = task.status.includes("ยังไม่เริ่ม") ? "start"
-                      : task.status.includes("อยู่ในกำหนด") ? "ongoing"
-                      : "done";
-    tr.innerHTML = `
-      <td>${task.project}</td>
-      <td>${new Date(task.startDate).toLocaleDateString()}</td>
-      <td>${new Date(task.endDate).toLocaleDateString()}</td>
-      <td>${task.duration}</td>
-      <td>${task.progressPercent.toFixed(2)}%</td>
-      <td><div class="progress-bar"><div class="progress-fill" style="width: ${Math.min(task.progressPercent, 100)}%"></div></div></td>
-      <td><span class="status ${statusClass}">${task.status}</span></td>
-      <td><span class="delete-btn" onclick="deleteTask(${index})">🗑️</span></td>
-    `;
-    tbody.appendChild(tr);
-  });
-}
+    const firebaseConfig = {
+      apiKey: "AIzaSyAorLJyboatrj9ocyiNWE1YF--J9tRyFnw",
+      authDomain: "v1app-5eebb.firebaseapp.com",
+      databaseURL: "https://v1app-5eebb-default-rtdb.firebaseio.com",
+      projectId: "v1app-5eebb",
+      storageBucket: "v1app-5eebb.firebasestorage.app",
+      messagingSenderId: "660883664493",
+      appId: "1:660883664493:web:369aab25e626c968381964"
+    };
 
-function addTask() {
-  const project = prompt("ชื่อโปรเจกต์:");
-  const start = prompt("วันเริ่มต้น (YYYY-MM-DD):");
-  const end = prompt("วันสิ้นสุด (YYYY-MM-DD):");
-  const duration = Math.ceil((new Date(end) - new Date(start)) / (1000 * 60 * 60 * 24));
-  const progress = Number(prompt("% ความคืบหน้า:", 0));
-  const status = prompt("สถานะ (เช่น ยังไม่เริ่มงาน / อยู่ในกำหนด):");
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const taskRef = ref(db, "tasks");
 
-  const newTask = { project, startDate: start, endDate: end, duration, progressPercent: progress, status };
-  tasks.push(newTask);
-  renderTasks(tasks);
+    const tbody = document.getElementById("taskTable");
+    const form = document.getElementById("taskForm");
+    const modal = document.getElementById("taskModal");
+    const searchInput = document.getElementById("searchInput");
+    const openModalBtn = document.getElementById("openModal");
+    const cancelModalBtn = document.getElementById("cancelModal");
 
-  // 🔁 ส่งไปยัง Google Sheet
-  fetch("https://script.google.com/macros/s/AKfycbyM-OkQ3hlpe_s7WVZbp6Xpdv0ht0lqYJfdCJm71u7PRssVU6pFuEAr-lMIiqF9JStw/exec", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(newTask)
-  })
-  .then(res => res.text())
-  .then(msg => alert("✅ บันทึกไปยัง Google Sheet แล้ว: " + msg))
-  .catch(err => alert("❌ Error: " + err.message));
-}
+    let allTasks = [];
 
-function deleteTask(index) {
-  if (confirm("ยืนยันลบงานนี้?")) {
-    tasks.splice(index, 1);
-    renderTasks(tasks);
-  }
-}
+    function renderTasks(data) {
+      tbody.innerHTML = "";
+      data.forEach(({ key, task }) => {
+        const fillClass = task.progressPercent >= 70 ? 'fill-high' : task.progressPercent >= 40 ? 'fill-medium' : 'fill-low';
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${task.project}</td>
+          <td>${task.taskName}</td>
+          <td>${task.assigneeName} (${task.department})</td>
+          <td>${task.startDate}</td>
+          <td>${task.endDate}</td>
+          <td>${task.duration}</td>
+          <td>${task.progressPercent}%</td>
+          <td><div class="progress-bar"><div class="progress-fill ${fillClass}" style="width:${task.progressPercent}%"></div></div></td>
+          <td>${task.status}</td>
+          <td>
+            <button onclick="editTask('${key}', ${JSON.stringify(task).replace(/"/g, '&quot;')})">✏️</button>
+            <button onclick="deleteTask('${key}')">🗑️</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
 
-renderTasks(tasks);
+    onValue(taskRef, (snapshot) => {
+      allTasks = [];
+      snapshot.forEach(child => {
+        allTasks.push({ key: child.key, task: child.val() });
+      });
+      renderTasks(allTasks);
+    });
 
-document.getElementById("search").addEventListener("input", (e) => {
-  const keyword = e.target.value.toLowerCase();
-  const filtered = tasks.filter(t => t.project.toLowerCase().includes(keyword));
-  renderTasks(filtered);
-});
-</script>
+    searchInput.addEventListener("input", () => {
+      const keyword = searchInput.value.toLowerCase();
+      const filtered = allTasks.filter(({ task }) =>
+        task.project.toLowerCase().includes(keyword)
+      );
+      renderTasks(filtered);
+    });
+
+    function showModal() {
+      modal.style.display = "flex";
+    }
+
+    function hideModal() {
+      modal.style.display = "none";
+    }
+
+    openModalBtn.onclick = showModal;
+    cancelModalBtn.onclick = hideModal;
+
+    window.addTask = function () {
+      const data = Object.fromEntries(new FormData(form).entries());
+      data.duration = Math.ceil((new Date(data.endDate) - new Date(data.startDate)) / (1000 * 60 * 60 * 24));
+      data.progressPercent = Number(data.progressPercent);
+      push(taskRef, data);
+      form.reset();
+      hideModal();
+    };
+
+    window.editTask = function (key, task) {
+      form.project.value = task.project;
+      form.taskName.value = task.taskName;
+      form.assigneeName.value = task.assigneeName;
+      form.department.value = task.department;
+      form.startDate.value = task.startDate;
+      form.endDate.value = task.endDate;
+      form.progressPercent.value = task.progressPercent;
+      form.status.value = task.status;
+      showModal();
+      form.onsubmit = function (e) {
+        e.preventDefault();
+        const data = Object.fromEntries(new FormData(form).entries());
+        data.duration = Math.ceil((new Date(data.endDate) - new Date(data.startDate)) / (1000 * 60 * 60 * 24));
+        data.progressPercent = Number(data.progressPercent);
+        update(ref(db, `tasks/${key}`), data);
+        form.reset();
+        form.onsubmit = defaultSubmit;
+        hideModal();
+      };
+    };
+
+    window.deleteTask = function (key) {
+      if (confirm("ลบงานนี้หรือไม่?")) remove(ref(db, `tasks/${key}`));
+    };
+
+    function defaultSubmit(e) {
+      e.preventDefault();
+      window.addTask();
+    }
+
+    form.onsubmit = defaultSubmit;
+
+    window.addEventListener("keydown", e => {
+      if (e.key === "Escape") hideModal();
+    });
+
+    modal.addEventListener("click", e => {
+      if (e.target === modal) hideModal();
+    });
+  </script>
 </body>
+
 </html>

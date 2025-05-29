@@ -1,22 +1,137 @@
-<!-- calendar.html -->
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Calendar</title>
-  <link rel="stylesheet" href="css/style.css" />
-  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
   <style>
-    body { font-family: sans-serif; padding: 2rem; background: #f0f0f0; }
-    h2 { text-align: center; color: #333; }
-    #calendar { max-width: 900px; margin: 2rem auto; background: white; padding: 1rem; border-radius: 6px; box-shadow: 0 0 5px rgba(0,0,0,0.1); }
+    body {
+      font-family: sans-serif;
+      background: #f7fcf7;
+      margin: 0;
+    }
+
+    header {
+      background-color: #0275d8;
+      color: rgb(24, 22, 22);
+      padding: 1rem;
+      text-align: center;
+    }
+
+    nav {
+      background-color: #01549b;
+      text-align: center;
+      padding: 0.5rem;
+    }
+
+    nav a {
+      margin: 0 1rem;
+      color: rgb(15, 15, 15);
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    h2 {
+      text-align: center;
+      margin-top: 2rem;
+    }
+
+    #calendar {
+      max-width: 1000px;
+      margin: 2rem auto;
+      background: rgb(240, 236, 236);
+      padding: 1rem;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
   </style>
 </head>
+
 <body>
-  <h2>ปฏิทินงาน</h2>
+
+  <!-- Header -->
+  <header>
+    <h1>ระบบติดตามงาน</h1>
+  </header>
+
+  <!-- Navigation -->
+  <nav>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="tasklist.html">Task List</a>
+    <a href="calendar.html">Calendar</a>
+
+  </nav>
+
+  <!-- Calendar Title -->
+  <h2>📆 ปฏิทินงาน</h2>
+
+  <!-- Calendar Container -->
   <div id="calendar"></div>
-  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
-  <script src="js/calendar.js"></script>
+
+  <!-- Firebase & Calendar Setup -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAorLJyboatrj9ocyiNWE1YF--J9tRyFnw",
+      authDomain: "v1app-5eebb.firebaseapp.com",
+      databaseURL: "https://v1app-5eebb-default-rtdb.firebaseio.com",
+      projectId: "v1app-5eebb",
+      storageBucket: "v1app-5eebb.firebasestorage.app",
+      messagingSenderId: "660883664493",
+      appId: "1:660883664493:web:369aab25e626c968381964"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const taskRef = ref(db, "tasks");
+
+    const calendarEl = document.getElementById("calendar");
+
+    const calendar = new FullCalendar.Calendar(calendarEl, {
+      initialView: 'dayGridMonth',
+      locale: 'th',
+      height: 'auto',
+      headerToolbar: {
+        start: 'prev,next today',
+        center: 'title',
+        end: 'dayGridMonth,listWeek'
+      },
+      events: []
+    });
+
+    calendar.render();
+
+    onValue(taskRef, (snapshot) => {
+      const events = [];
+      snapshot.forEach(child => {
+        const task = child.val();
+        const start = new Date(task.startDate);
+        const end = new Date(task.endDate);
+        const color =
+          task.status === 'เสร็จสิ้น' ? '#66bb6a' :
+            task.status === 'อยู่ในกำหนด' ? '#ffee58' : '#ef5350';
+
+        for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+          events.push({
+            title: `${task.taskName || task.project} (${task.assigneeName || '-'})`,
+            start: new Date(d),
+            allDay: true,
+            backgroundColor: color,
+            textColor: "#000000"  // เพิ่มบรรทัดนี้
+          });
+
+        }
+
+      });
+      calendar.removeAllEvents();
+      calendar.addEventSource(events);
+    });
+  </script>
 </body>
+
 </html>
