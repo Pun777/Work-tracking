@@ -2,351 +2,355 @@
 <html lang="th">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Task List</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ระบบติดตามงาน - แผนก IT</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;600&display=swap" rel="stylesheet">
   <style>
     body {
-      font-family: sans-serif;
-      padding: 2rem;
-      background: #f9f9f9;
+      font-family: 'Prompt', sans-serif;
+      background-image: url('green.jpg');
+      /* เปลี่ยนชื่อเป็นไฟล์ภาพของคุณ */
+      background-size: cover;
+      /* ปรับให้เต็มหน้าจอ */
+      background-position: center;
+      background-repeat: no-repeat;
+      margin: 0;
+      color: #333;
     }
 
-    h2 {
-      text-align: center;
-      margin-bottom: 1rem;
+    a:hover {
+      text-decoration: underline;
     }
 
-    .controls {
+    .toolbar {
       display: flex;
-      justify-content: center;
+      flex-wrap: wrap;
       gap: 1rem;
-      margin-bottom: 1rem;
+      padding: 1rem;
+      justify-content: center;
     }
 
-    input[type="text"] {
-      padding: 0.5rem;
-      font-size: 1rem;
-      width: 250px;
-    }
-
-    button {
-      padding: 0.5rem 1rem;
-      font-size: 1rem;
-      cursor: pointer;
-      border-radius: 6px;
-      border: none;
-      background-color: #007bff;
-      color: white;
+    .toolbar input,
+    .toolbar select {
+      max-width: 200px;
     }
 
     table {
-      width: 100%;
-      border-collapse: collapse;
-      background: white;
+      background: rgba(255, 255, 255, 0.9);
       border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    }
-
-    th,
-    td {
-      border: 1px solid #ccc;
-      padding: 0.75rem;
-      text-align: center;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     }
 
     th {
-      background: #007bff;
+      background-color: #2ee75d;
       color: white;
+      text-align: center;
     }
 
-    .progress-bar {
-      height: 1rem;
-      background-color: #ddd;
-      border-radius: 4px;
-      overflow: hidden;
+    td {
+      background-color: rgba(255, 255, 255, 0.7);
+      vertical-align: middle;
     }
 
-    .progress-fill {
-      height: 100%;
-      transition: width 0.3s;
+    table,
+    th,
+    td {
+      border: 1px solid #ddd;
     }
 
-    .fill-low {
-      background-color: #ff9800;
-    }
-
-    .fill-medium {
-      background-color: #ffc107;
-    }
-
-    .fill-high {
-      background-color: #4caf50;
-    }
-
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.5);
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-    }
-
-    .modal-content {
-      background: white;
-      padding: 2rem;
-      border-radius: 12px;
-      width: 100%;
-      max-width: 500px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-
-    .modal-content input,
-    .modal-content select {
-      padding: 1rem;
-      font-size: 1.05rem;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      width: 100%;
-      box-sizing: border-box;
-    }
-
-    .modal-content .button-group {
-      display: flex;
-      justify-content: space-between;
-      gap: 1rem;
-    }
-
-    .modal-content button[type="submit"],
-    .modal-content button[type="button"] {
-      padding: 0.8rem;
-      font-size: 1rem;
-      font-weight: bold;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      width: 100%;
-    }
-
-    .modal-content button[type="submit"] {
-      background-color: #28a745;
-      color: white;
-    }
-
-    .modal-content button[type="button"] {
-      background-color: #dc3545;
-      color: white;
-    }
-
-    body {
-      font-family: sans-serif;
-      padding: 2rem;
-      background: #f0fff4;
-      margin: 0;
+    tbody tr:hover {
+      background-color: rgba(144, 238, 144, 0.2);
     }
   </style>
-  <header style="background-color: #0275d8; color: white; padding: 1rem; text-align: center;">
-    <h1>ระบบติดตามงาน</h1>
-  </header>
-
-  <nav style="background-color: #01549b; text-align: center; padding: 0.5rem;">
-    <a href="dashboard.html"
-      style="margin: 0 1rem; color: white; font-weight: bold; text-decoration: none;">Dashboard</a>
-    <a href="tasklist.html" style="margin: 0 1rem; color: white; font-weight: bold; text-decoration: none;">Task
-      List</a>
-    <a href="calendar.html" style="margin: 0 1rem; color: white; font-weight: bold; text-decoration: none;">Calendar</a>
-
-
-  </nav>
-
-
 </head>
 
 <body>
+  <header
+    style="background-color: #2ee75d; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; border-radius: 6px 6px 0 0;">
+    <h1 style="margin: 0; font-size: 1.8rem; font-weight: bold;">Tracking</h1>
+    <nav>
+      <a href="index.html"
+        style="margin-left: 1rem; font-weight: 500; color: black; text-decoration: none;">แดชบอร์ด</a>
+      <a href="tasklist.html"
+        style="margin-left: 1rem; font-weight: 500; color: black; text-decoration: none;">รายการงาน</a>
+      <a href="calendar.html"
+        style="margin-left: 1rem; font-weight: 500; color: black; text-decoration: none;">ปฏิทิน</a>
+      <a href="employee.html"
+        style="margin-left: 1rem; font-weight: 500; color: black; text-decoration: none;">พนักงาน</a>
+      <a href="admin.html" id="adminMenuLink"
+        style="margin-left: 1rem; font-weight: 500; color: black; text-decoration: none; display: none;">แอดมิน</a>
+      <a href="#" id="logoutBtn"
+        style="margin-left: 1rem; font-weight: 500; color: black; text-decoration: none;">ออกจากระบบ</a>
+    </nav>
+  </header>
 
-  <h2>รายการงาน</h2>
-
-  <div class="controls">
-    <input type="text" id="searchInput" placeholder="ค้นหาโปรเจกต์...">
-    <button id="openModal">➕ เพิ่มงานใหม่</button>
+  <div class="toolbar">
+    <button id="addTaskBtn" class="btn btn-primary d-none" onclick="showAddModal()">+ เพิ่มงาน</button>
+    <input type="text" class="form-control" id="searchInput" placeholder="ค้นหาชื่องาน / ผู้รับผิดชอบ">
+    <select class="form-select" id="statusFilter">
+      <option value="">-- กรองตามสถานะ --</option>
+      <option value="⏳">⏳ รอดำเนินการ</option>
+      <option value="⚠️">⚠️ ดำเนินการอยู่</option>
+      <option value="✅">✅ เสร็จสิ้น</option>
+      <option value="❌">❌ ยังไม่เริ่ม</option>
+    </select>
+    <select class="form-select" id="deptFilter">
+      <option value="">-- กรองตามแผนก --</option>
+      <option value="IT">IT</option>
+      <option value="เซลล์">เซลล์</option>
+      <option value="โอพี">โอพี</option>
+      <option value="บัญชี">บัญชี</option>
+      <option value="ตั๋ว">ตั๋ว</option>
+      <option value="ผู้บริหาร">ผู้บริหาร</option>
+    </select>
   </div>
 
-  <div class="modal" id="taskModal">
-    <div class="modal-content">
-      <form id="taskForm">
-        <input name="project" placeholder="ชื่อโปรเจกต์" required>
-        <input name="taskName" placeholder="งานที่ทำ" required>
-        <input name="assigneeName" placeholder="ชื่อผู้รับผิดชอบ" required>
-        <input name="department" placeholder="แผนก" required>
-        <input name="startDate" type="date" required>
-        <input name="endDate" type="date" required>
-        <input name="progressPercent" type="number" min="0" max="100" placeholder="% ความคืบหน้า" required>
-        <select name="status" required>
-          <option value="เสร็จสิ้น">✅ เสร็จสิ้น</option>
-          <option value="อยู่ในกำหนด">⚠️ อยู่ในกำหนด</option>
-          <option value="เสร็จไม่ทัน">❌ เสร็จไม่ทัน</option>
-        </select>
-        <div class="button-group">
-          <button type="submit">บันทึก</button>
-          <button type="button" id="cancelModal">ยกเลิก</button>
+  <div class="container">
+    <table class="table table-bordered mt-3">
+      <thead>
+        <tr>
+          <th>ชื่องาน</th>
+          <th>ผู้รับผิดชอบ</th>
+          <th>แผนก</th>
+          <th>วันเริ่ม</th>
+          <th>วันสิ้นสุด</th>
+          <th>สถานะ</th>
+          <th>% ความคืบหน้า</th>
+          <th id="adminColumnHeader" class="d-none">จัดการ</th>
+        </tr>
+      </thead>
+      <tbody id="taskTableBody"></tbody>
+    </table>
+  </div>
+
+  <!-- Modal เพิ่มงาน -->
+  <div class="modal fade" id="addTaskModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">เพิ่มงาน</h5>
+          <button class="btn-close" data-bs-dismiss="modal"></button>
         </div>
-      </form>
+        <div class="modal-body">
+          <form id="addTaskForm">
+            <div class="mb-2"><label>ชื่องาน</label><input type="text" class="form-control" id="taskName" required>
+            </div>
+            <div class="mb-2"><label>วันเริ่มต้น</label><input type="date" class="form-control" id="startDate" required>
+            </div>
+            <div class="mb-2"><label>วันสิ้นสุด</label><input type="date" class="form-control" id="endDate" required>
+            </div>
+            <div class="mb-2">
+              <label>แผนก</label>
+              <select class="form-select" id="department" required>
+                <option value="">-- เลือกแผนก --</option>
+                <option value="IT">IT</option>
+                <option value="เซลล์">เซลล์</option>
+                <option value="โอพี">โอพี</option>
+                <option value="บัญชี">บัญชี</option>
+                <option value="ตั๋ว">ตั๋ว</option>
+                <option value="ผู้บริหาร">ผู้บริหาร</option>
+              </select>
+            </div>
+            <div class="mb-2"><label>ผู้รับผิดชอบ</label><select class="form-select" id="assignee" required></select>
+            </div>
+            <div class="mb-2"><label>สถานะ</label>
+              <select class="form-select" id="status" required>
+                <option value="⏳">⏳ รอดำเนินการ</option>
+                <option value="⚠️">⚠️ ดำเนินการอยู่</option>
+                <option value="❌">❌ ยังไม่เริ่ม</option>
+              </select>
+            </div>
+            <div class="mb-2"><label>% ความคืบหน้า</label><input type="number" class="form-control" id="progress"
+                min="0" max="100" value="0" required></div>
+            <div class="text-end"><button type="submit" class="btn btn-success">บันทึก</button></div>
+          </form>
+          <div id="successMsg" class="mt-3 text-success" style="display:none;">✅ บันทึกงานเรียบร้อยแล้ว</div>
+        </div>
+      </div>
     </div>
   </div>
 
-  <table>
-    <thead>
-      <tr>
-        <th>ชื่อโปรเจกต์</th>
-        <th>งานที่ทำ</th>
-        <th>ผู้รับผิดชอบ</th>
-        <th>วันเริ่มต้น</th>
-        <th>วันสิ้นสุด</th>
-        <th>ระยะเวลา (วัน)</th>
-        <th>% ความคืบหน้า</th>
-        <th>Progress</th>
-        <th>สถานะ</th>
-        <th>จัดการ</th>
-      </tr>
-    </thead>
-    <tbody id="taskTable"></tbody>
-  </table>
-
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-    import { getDatabase, ref, push, update, remove, onValue } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
-
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script>
     const firebaseConfig = {
       apiKey: "AIzaSyAorLJyboatrj9ocyiNWE1YF--J9tRyFnw",
       authDomain: "v1app-5eebb.firebaseapp.com",
       databaseURL: "https://v1app-5eebb-default-rtdb.firebaseio.com",
       projectId: "v1app-5eebb",
-      storageBucket: "v1app-5eebb.firebasestorage.app",
+      storageBucket: "v1app-5eebb.appspot.com",
       messagingSenderId: "660883664493",
       appId: "1:660883664493:web:369aab25e626c968381964"
     };
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-    const taskRef = ref(db, "tasks");
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    let isAdmin = false;
+    const addTaskModal = new bootstrap.Modal(document.getElementById("addTaskModal"));
+    let editingTaskId = null;
 
-    const tbody = document.getElementById("taskTable");
-    const form = document.getElementById("taskForm");
-    const modal = document.getElementById("taskModal");
-    const searchInput = document.getElementById("searchInput");
-    const openModalBtn = document.getElementById("openModal");
-    const cancelModalBtn = document.getElementById("cancelModal");
+    firebase.auth().onAuthStateChanged(async (user) => {
+      if (user) {
+        const uid = user.uid;
+        const snapshot = await db.ref('users/' + uid).get();
+        if (snapshot.exists()) {
+          isAdmin = snapshot.val().role === 'admin';
+          if (isAdmin) {
+            document.getElementById("addTaskBtn").classList.remove("d-none");
+            document.getElementById("adminColumnHeader").classList.remove("d-none");
+            document.getElementById("adminMenuLink").style.display = "inline-block";
+          }
+        }
+        loadTasks();
+      } else {
+        location.href = "login.html";
+      }
+    });
 
-    let allTasks = [];
+    function showAddModal() {
+      document.getElementById("addTaskForm").reset();
+      editingTaskId = null;
+      addTaskModal.show();
+    }
 
-    function renderTasks(data) {
-      tbody.innerHTML = "";
-      data.forEach(({ key, task }) => {
-        const fillClass = task.progressPercent >= 70 ? 'fill-high' : task.progressPercent >= 40 ? 'fill-medium' : 'fill-low';
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${task.project}</td>
-          <td>${task.taskName}</td>
-          <td>${task.assigneeName} (${task.department})</td>
-          <td>${task.startDate}</td>
-          <td>${task.endDate}</td>
-          <td>${task.duration}</td>
-          <td>${task.progressPercent}%</td>
-          <td><div class="progress-bar"><div class="progress-fill ${fillClass}" style="width:${task.progressPercent}%"></div></div></td>
-          <td>${task.status}</td>
-          <td>
-            <button onclick="editTask('${key}', ${JSON.stringify(task).replace(/"/g, '&quot;')})">✏️</button>
-            <button onclick="deleteTask('${key}')">🗑️</button>
-          </td>
-        `;
-        tbody.appendChild(tr);
+    document.getElementById("department").addEventListener("change", loadAssigneeOptions);
+    document.getElementById("searchInput").addEventListener("input", loadTasks);
+    document.getElementById("statusFilter").addEventListener("change", loadTasks);
+    document.getElementById("deptFilter").addEventListener("change", loadTasks);
+
+    function loadAssigneeOptions() {
+      const dept = document.getElementById("department").value;
+      const assigneeSelect = document.getElementById("assignee");
+      assigneeSelect.innerHTML = "<option value=''>-- เลือกผู้รับผิดชอบ --</option>";
+      if (!dept) return;
+      db.ref("employees").orderByChild("department").equalTo(dept).once("value", (snapshot) => {
+        snapshot.forEach((childSnapshot) => {
+          const emp = childSnapshot.val();
+          const option = document.createElement("option");
+          option.value = emp.nickname;
+          option.textContent = emp.nickname + " (" + emp.name + ")";
+          assigneeSelect.appendChild(option);
+        });
       });
     }
 
-    onValue(taskRef, (snapshot) => {
-      allTasks = [];
-      snapshot.forEach(child => {
-        allTasks.push({ key: child.key, task: child.val() });
+    function getProgressBarClass(progress) {
+      if (progress === 100) return "bg-success";
+      if (progress >= 51) return "bg-info";
+      if (progress >= 1) return "bg-warning";
+      return "bg-secondary";
+    }
+
+    function loadTasks() {
+      const taskTableBody = document.getElementById("taskTableBody");
+      const search = document.getElementById("searchInput").value.toLowerCase();
+      const status = document.getElementById("statusFilter").value;
+      const dept = document.getElementById("deptFilter").value;
+      taskTableBody.innerHTML = "";
+
+      db.ref("tasks").once("value", (snapshot) => {
+        snapshot.forEach((childSnapshot) => {
+          const task = childSnapshot.val();
+          const progress = parseInt(task.progress || 0);
+
+          const matchesSearch = task.taskName.toLowerCase().includes(search) || task.assigneeName.toLowerCase().includes(search);
+          const matchesStatus = !status || task.status === status;
+          const matchesDept = !dept || task.department === dept;
+
+          if (matchesSearch && matchesStatus && matchesDept) {
+            const tr = document.createElement("tr");
+
+            const manageCol = isAdmin
+              ? `<td>
+                  <button class="btn btn-sm btn-warning me-1" onclick="editTask('${childSnapshot.key}')">📝</button>
+                  <button class="btn btn-sm btn-danger" onclick="deleteTask('${childSnapshot.key}')">🗑️</button>
+                </td>`
+              : "";
+
+            tr.innerHTML = `
+              <td>${task.taskName}</td>
+              <td>${task.assigneeName}</td>
+              <td>${task.department}</td>
+              <td>${task.startDate}</td>
+              <td>${task.endDate}</td>
+              <td>${task.status}</td>
+              <td>
+                <div class="progress">
+                  <div class="progress-bar ${getProgressBarClass(progress)}" style="width:${progress}%">${progress}%</div>
+                </div>
+              </td>
+              ${manageCol}
+            `;
+            taskTableBody.appendChild(tr);
+          }
+        });
       });
-      renderTasks(allTasks);
-    });
-
-    searchInput.addEventListener("input", () => {
-      const keyword = searchInput.value.toLowerCase();
-      const filtered = allTasks.filter(({ task }) =>
-        task.project.toLowerCase().includes(keyword)
-      );
-      renderTasks(filtered);
-    });
-
-    function showModal() {
-      modal.style.display = "flex";
     }
 
-    function hideModal() {
-      modal.style.display = "none";
+    function deleteTask(taskId) {
+      if (confirm("คุณแน่ใจหรือไม่ว่าต้องการลบงานนี้?")) {
+        db.ref("tasks/" + taskId).remove().then(() => {
+          alert("ลบงานเรียบร้อยแล้ว");
+          loadTasks();
+        });
+      }
     }
 
-    openModalBtn.onclick = showModal;
-    cancelModalBtn.onclick = hideModal;
-
-    window.addTask = function () {
-      const data = Object.fromEntries(new FormData(form).entries());
-      data.duration = Math.ceil((new Date(data.endDate) - new Date(data.startDate)) / (1000 * 60 * 60 * 24));
-      data.progressPercent = Number(data.progressPercent);
-      push(taskRef, data);
-      form.reset();
-      hideModal();
-    };
-
-    window.editTask = function (key, task) {
-      form.project.value = task.project;
-      form.taskName.value = task.taskName;
-      form.assigneeName.value = task.assigneeName;
-      form.department.value = task.department;
-      form.startDate.value = task.startDate;
-      form.endDate.value = task.endDate;
-      form.progressPercent.value = task.progressPercent;
-      form.status.value = task.status;
-      showModal();
-      form.onsubmit = function (e) {
-        e.preventDefault();
-        const data = Object.fromEntries(new FormData(form).entries());
-        data.duration = Math.ceil((new Date(data.endDate) - new Date(data.startDate)) / (1000 * 60 * 60 * 24));
-        data.progressPercent = Number(data.progressPercent);
-        update(ref(db, `tasks/${key}`), data);
-        form.reset();
-        form.onsubmit = defaultSubmit;
-        hideModal();
-      };
-    };
-
-    window.deleteTask = function (key) {
-      if (confirm("ลบงานนี้หรือไม่?")) remove(ref(db, `tasks/${key}`));
-    };
-
-    function defaultSubmit(e) {
+    document.getElementById("addTaskForm").addEventListener("submit", async function (e) {
       e.preventDefault();
-      window.addTask();
-    }
+      const taskName = document.getElementById("taskName").value;
+      const startDate = document.getElementById("startDate").value;
+      const endDate = document.getElementById("endDate").value;
+      const department = document.getElementById("department").value;
+      const assignee = document.getElementById("assignee").value;
+      let status = document.getElementById("status").value;
+      const progress = parseInt(document.getElementById("progress").value);
+      if (progress === 100) status = "✅";
 
-    form.onsubmit = defaultSubmit;
+      const taskData = { taskName, startDate, endDate, department, assigneeName: assignee, status, progress };
 
-    window.addEventListener("keydown", e => {
-      if (e.key === "Escape") hideModal();
+      if (editingTaskId) {
+        await db.ref("tasks/" + editingTaskId).update({ ...taskData, updatedAt: new Date().toISOString() });
+        editingTaskId = null;
+      } else {
+        await db.ref("tasks").push({ ...taskData, createdAt: new Date().toISOString() });
+      }
+
+      document.getElementById("addTaskForm").reset();
+      document.getElementById("successMsg").style.display = "block";
+      setTimeout(() => {
+        addTaskModal.hide();
+        document.getElementById("successMsg").style.display = "none";
+        loadTasks();
+      }, 1000);
     });
 
-    modal.addEventListener("click", e => {
-      if (e.target === modal) hideModal();
+    function editTask(taskId) {
+      db.ref("tasks/" + taskId).once("value", (snapshot) => {
+        const task = snapshot.val();
+        document.getElementById("taskName").value = task.taskName;
+        document.getElementById("startDate").value = task.startDate;
+        document.getElementById("endDate").value = task.endDate;
+        document.getElementById("department").value = task.department;
+        loadAssigneeOptions();
+        setTimeout(() => {
+          document.getElementById("assignee").value = task.assigneeName;
+        }, 300);
+        document.getElementById("status").value = task.status;
+        document.getElementById("progress").value = task.progress;
+        editingTaskId = taskId;
+        addTaskModal.show();
+      });
+    }
+
+    // ออกจากระบบ
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      firebase.auth().signOut().then(() => location.href = "login.html");
     });
   </script>
 </body>

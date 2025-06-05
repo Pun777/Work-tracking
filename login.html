@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>เข้าสู่ระบบ - Tracking </title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+</head>
+<body class="bg-blue-50 flex items-center justify-center min-h-screen"
+><style> body {
+      font-family: 'Prompt', sans-serif;
+      background-image: url('green.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      margin: 0;
+      color: #333;
+    }
+</style>
+
+
+  <div class="bg-white shadow-xl rounded-xl p-8 w-full max-w-md">
+    <h1 class="text-2xl font-bold text-center text-blue-700 mb-6">Tracking Login</h1>
+
+    <form id="authForm" class="space-y-4">
+      <div>
+        <label for="email" class="block text-sm font-medium text-gray-700">อีเมล</label>
+        <input type="email" id="email" required class="mt-1 block w-full px-4 py-2 border rounded-md"/>
+      </div>
+
+      <div>
+        <label for="password" class="block text-sm font-medium text-gray-700">รหัสผ่าน</label>
+        <input type="password" id="password" required class="mt-1 block w-full px-4 py-2 border rounded-md"/>
+      </div>
+
+      <div>
+        <button type="submit" id="loginBtn" class="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700">เข้าสู่ระบบ</button>
+        <button type="button" id="signupBtn" class="w-full bg-green-600 text-white py-2 mt-2 rounded-md hover:bg-green-700">สมัครสมาชิก</button>
+        <button type="button" id="googleBtn" class="w-full bg-red-600 text-white py-2 mt-2 rounded-md hover:bg-red-700">เข้าสู่ระบบด้วย Google</button>
+      </div>
+    </form>
+
+    <p id="errorMsg" class="text-red-600 text-sm mt-4 text-center hidden"></p>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAorLJyboatrj9ocyiNWE1YF--J9tRyFnw",
+      authDomain: "v1app-5eebb.firebaseapp.com",
+      databaseURL: "https://v1app-5eebb-default-rtdb.firebaseio.com",
+      projectId: "v1app-5eebb",
+      storageBucket: "v1app-5eebb.appspot.com",
+      messagingSenderId: "660883664493",
+      appId: "1:660883664493:web:369aab25e626c968381964"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
+
+    const loginBtn = document.getElementById('loginBtn');
+    const signupBtn = document.getElementById('signupBtn');
+    const googleBtn = document.getElementById('googleBtn');
+    const errorMsg = document.getElementById('errorMsg');
+
+    const redirectByRole = async (user) => {
+      const uid = user.uid;
+      const userRef = db.ref('users/' + uid);
+      const snapshot = await userRef.get();
+
+      if (snapshot.exists()) {
+        const role = snapshot.val().role;
+        if (role === 'admin') {
+          window.location.href = 'admin.html';
+        } else {
+          window.location.href = '  index.html';
+        }
+      } else {
+        const isAdminEmail = user.email === "pan552211@gmail.com"; // 👈 แก้ตรงนี้เป็นอีเมลแอดมินของคุณ
+        await userRef.set({
+          email: user.email,
+          role: isAdminEmail ? "admin" : "user"
+        });
+        window.location.href = isAdminEmail ? 'admin.html' : 'index.html';
+      }
+    };
+
+    loginBtn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      try {
+        const result = await auth.signInWithEmailAndPassword(email, password);
+        await redirectByRole(result.user);
+      } catch (error) {
+        errorMsg.textContent = "เข้าสู่ระบบไม่สำเร็จ: " + error.message;
+        errorMsg.classList.remove('hidden');
+      }
+    });
+
+    signupBtn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      try {
+        const result = await auth.createUserWithEmailAndPassword(email, password);
+        const uid = result.user.uid;
+        const isAdminEmail = result.user.email === "pan552211@gmail.com"; // 👈 แก้ตรงนี้เป็นอีเมลแอดมิน
+        await db.ref('users/' + uid).set({
+          email: result.user.email,
+          role: isAdminEmail ? "admin" : "user"
+        });
+        window.location.href = isAdminEmail ? "admin.html" : "index.html";
+      } catch (error) {
+        errorMsg.textContent = "สมัครสมาชิกไม่สำเร็จ: " + error.message;
+        errorMsg.classList.remove('hidden');
+      }
+    });
+
+    googleBtn.addEventListener('click', async () => {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      try {
+        const result = await auth.signInWithPopup(provider);
+        await redirectByRole(result.user);
+      } catch (error) {
+        errorMsg.textContent = "Google Sign-in ล้มเหลว: " + error.message;
+        errorMsg.classList.remove('hidden');
+      }
+    });
+  </script>
+</body>
+</html>

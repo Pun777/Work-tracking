@@ -1,10 +1,317 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta http-equiv="refresh" content="0; url=dashboard.html" />
-    <title>Redirecting...</title>
-  </head>
-  <body>
-    <p>Redirecting to <a href="dashboard.html">dashboard.html</a></p>
-  </body>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>แดชบอร์ดติดตามงาน</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+
+  <style>
+    body {
+      font-family: 'Prompt', sans-serif;
+      background-image: url('green.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      margin: 0;
+      color: #333;
+    }
+
+    header {
+      background-color: #2ee75d;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-radius: 0 0 12px 12px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+    }
+
+
+    nav a {
+      margin-left: 1rem;
+      font-weight: 500;
+      color: black;
+      text-decoration: none;
+    }
+
+    main {
+      padding: 2rem;
+      max-width: 1200px;
+      margin: auto;
+    }
+
+    section {
+      margin-bottom: 2.5rem;
+    }
+
+    section h2 {
+      font-size: 1.5rem;
+      color: #0d0d0d;
+      margin-bottom: 1rem;
+    }
+
+    .status-card {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.274);
+      padding: 1rem 1.5rem;
+      border-radius: 12px;
+      margin: 0.5rem;
+      text-align: center;
+      min-width: 140px;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(4px);
+    }
+
+    .status-card h3 {
+      font-size: 1.6rem;
+      margin: 0;
+    }
+
+    .status-card p {
+      margin: 0.5rem 0 0;
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    .status-card small {
+      display: block;
+      margin-top: 0.25rem;
+      color: #444;
+      font-size: 0.85rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: rgba(255, 255, 255, 0.5);
+      backdrop-filter: blur(4px);
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    th,
+    td {
+      padding: 0.9rem 1.2rem;
+      border-bottom: 1px solid #e0e0e0;
+      text-align: left;
+      font-size: 0.95rem;
+    }
+
+    th {
+      background-color: rgba(227, 242, 253, 0.8);
+      font-weight: 600;
+      color: #0a0a0a;
+      backdrop-filter: blur(4px);
+    }
+
+    tr:hover {
+      background-color: rgba(255, 255, 255, 0.3);
+    }
+
+    @media (max-width: 768px) {
+
+      table,
+      thead,
+      tbody,
+      th,
+      td,
+      tr {
+        display: block;
+      }
+
+      th {
+        display: none;
+      }
+
+      td {
+        padding: 0.6rem;
+        border: none;
+        position: relative;
+      }
+
+      td:before {
+        content: attr(data-label);
+        font-weight: bold;
+        display: block;
+        color: #4ff399;
+        margin-bottom: 0.2rem;
+      }
+
+      .status-card {
+        width: 100%;
+        margin: 0.5rem 0;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>Tracking</h1>
+    <nav>
+      <a href="index.html">แดชบอร์ด</a>
+      <a href="tasklist.html">รายการงาน</a>
+      <a href="calendar.html">ปฏิทิน</a>
+      <a href="employee.html">พนักงาน</a>
+      <a href="admin.html" id="adminMenuLink" style="display: none;">แอดมิน</a>
+      <a href="#" id="logoutBtn">ออกจากระบบ</a>
+    </nav>
+  </header>
+
+  <main>
+    <section id="work-summary">
+      <h2>สรุปสถานะงาน</h2>
+      <div id="status-cards"></div>
+    </section>
+
+    <section id="upcoming-tasks">
+      <h2>งานที่ต้องทำใน 7 วัน</h2>
+      <table id="upcoming-table">
+        <thead>
+          <tr>
+            <th>งานที่ทำ</th>
+            <th>ผู้รับผิดชอบ</th>
+            <th>วันเริ่มต้น</th>
+            <th>วันสิ้นสุด</th>
+            <th>ความคืบหน้า</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
+    <section id="delayed-tasks">
+      <h2>งานที่เลยกำหนด / ดำเนินการอยู่</h2>
+      <table id="delayed-table">
+        <thead>
+          <tr>
+            <th>งานที่ทำ</th>
+            <th>ผู้รับผิดชอบ</th>
+            <th>วันเริ่มต้น</th>
+            <th>วันสิ้นสุด</th>
+            <th>สถานะ</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+  </main>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAorLJyboatrj9ocyiNWE1YF--J9tRyFnw",
+      authDomain: "v1app-5eebb.firebaseapp.com",
+      databaseURL: "https://v1app-5eebb-default-rtdb.firebaseio.com",
+      projectId: "v1app-5eebb",
+      storageBucket: "v1app-5eebb.appspot.com",
+      messagingSenderId: "660883664493",
+      appId: "1:660883664493:web:369aab25e626c968381964"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    firebase.auth().onAuthStateChanged(user => {
+      if (!user) {
+        window.location.href = "login.html";
+      } else {
+        const uid = user.uid;
+        firebase.database().ref("users/" + uid).once("value")
+          .then(snapshot => {
+            const role = snapshot.val()?.role;
+            if (role === "admin") {
+              document.getElementById("adminMenuLink").style.display = "inline-block";
+            }
+          });
+      }
+    });
+
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      firebase.auth().signOut().then(() => {
+        location.href = "login.html";
+      });
+    });
+
+    db.ref("tasks").on("value", snapshot => {
+      const tasks = snapshot.val();
+      const upcomingBody = document.querySelector("#upcoming-table tbody");
+      const delayedBody = document.querySelector("#delayed-table tbody");
+      const statusCards = document.getElementById("status-cards");
+
+      upcomingBody.innerHTML = "";
+      delayedBody.innerHTML = "";
+      statusCards.innerHTML = "";
+
+      const now = new Date();
+      const sevenDaysFromNow = new Date();
+      sevenDaysFromNow.setDate(now.getDate() + 7);
+
+      let summary = { "❌": 0, "⏳": 0, "⚠️": 0 };
+      const statusLabels = {
+        "❌": "ยังไม่เริ่ม",
+        "⏳": "รอดำเนินการ",
+        "⚠️": "กำลังดำเนินการ"
+      };
+
+      for (let id in tasks) {
+        const task = tasks[id];
+        const endDate = new Date(task.endDate);
+        const statusEmoji = task.status || "⏳";
+
+        if (summary[statusEmoji] !== undefined) summary[statusEmoji]++;
+
+        const progress = parseInt(task.progress) || 0;
+
+        const row = `
+          <tr>
+            <td data-label="งานที่ทำ">${task.taskName}</td>
+            <td data-label="ผู้รับผิดชอบ">${task.assigneeName} (${task.department})</td>
+            <td data-label="วันเริ่มต้น">${task.startDate}</td>
+            <td data-label="วันสิ้นสุด">${task.endDate}</td>
+            <td data-label="ความคืบหน้า">
+              <div style="background:#e0f2f1; border-radius:6px; overflow:hidden; height:14px;">
+                <div style="width:${progress}%; background:#26a69a; height:100%;"></div>
+              </div>
+              <small>${progress}%</small>
+            </td>
+          </tr>
+        `;
+
+        if (endDate >= now && endDate <= sevenDaysFromNow) {
+          upcomingBody.innerHTML += row;
+        }
+
+        if (endDate < now || statusEmoji !== "✅") {
+          delayedBody.innerHTML += `
+            <tr>
+              <td data-label="งานที่ทำ">${task.taskName}</td>
+              <td data-label="ผู้รับผิดชอบ">${task.assigneeName} (${task.department})</td>
+              <td data-label="วันเริ่มต้น">${task.startDate}</td>
+              <td data-label="วันสิ้นสุด">${task.endDate}</td>
+              <td data-label="สถานะ">${statusEmoji}</td>
+            </tr>
+          `;
+        }
+      }
+
+      for (let status in summary) {
+        statusCards.innerHTML += `
+          <div class="status-card">
+            <h3>${status}</h3>
+            <p>${summary[status]} งาน</p>
+            <small>${statusLabels[status]}</small>
+          </div>
+        `;
+      }
+    });
+  </script>
+</body>
+
 </html>
