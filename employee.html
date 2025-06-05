@@ -100,7 +100,7 @@
 
 <body>
   <header>
-     <h1 style="margin: 0; font-size: 1.8rem;">Tracking</h1>
+    <h1 style="margin: 0; font-size: 1.8rem;">Tracking</h1>
     <nav>
       <a href="index.html">แดชบอร์ด</a>
       <a href="tasklist.html">รายการงาน</a>
@@ -216,22 +216,24 @@
       if (!user) {
         window.location.href = "login.html";
       } else {
-        const adminEmails = ["pan552211@gmail.com"];
-        if (adminEmails.includes(user.email)) {
-          document.getElementById("addEmployeeBtn").style.display = "inline-block";
-          document.getElementById("adminMenuLink").style.display = "inline-block";
-        }
+        const uid = user.uid;
+
+        db.ref("users/" + uid + "/role").once("value", snap => {
+          if (snap.exists() && snap.val() === "admin") {
+            // แสดงเมนู/ปุ่มสำหรับแอดมิน
+            document.getElementById("addEmployeeBtn").style.display = "inline-block";
+            document.getElementById("adminMenuLink").style.display = "inline-block";
+          } else {
+            console.log("ไม่ใช่แอดมิน:", user.email);
+          }
+        });
+
       }
     });
 
-    function loadEmployees() {
-      db.ref("employees").once("value", snapshot => {
-        allEmployees = [];
-        snapshot.forEach(child => {
-          allEmployees.push(child.val());
-        });
-        displayEmployees();
-      });
+    // ใช้แทน . ใน email เพราะ Firebase ไม่อนุญาต . ใน key path
+    function encodeEmail(email) {
+      return email.replace(/\./g, ',');
     }
 
     function displayEmployees() {
