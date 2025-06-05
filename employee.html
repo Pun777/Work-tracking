@@ -192,6 +192,11 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
 
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyAorLJyboatrj9ocyiNWE1YF--J9tRyFnw",
@@ -212,28 +217,34 @@
 
     let allEmployees = [];
 
+    // ✅ ตรวจสอบผู้ใช้ที่ login แล้วค่อยโหลดข้อมูล
     firebase.auth().onAuthStateChanged(user => {
       if (!user) {
         window.location.href = "login.html";
       } else {
         const uid = user.uid;
 
+        // ตรวจสอบว่า user เป็น admin หรือไม่
         db.ref("users/" + uid + "/role").once("value", snap => {
           if (snap.exists() && snap.val() === "admin") {
-            // แสดงเมนู/ปุ่มสำหรับแอดมิน
             document.getElementById("addEmployeeBtn").style.display = "inline-block";
             document.getElementById("adminMenuLink").style.display = "inline-block";
-          } else {
-            console.log("ไม่ใช่แอดมิน:", user.email);
           }
         });
 
+        // ✅ โหลดพนักงานหลัง auth สำเร็จ
+        loadEmployees();
       }
     });
 
-    // ใช้แทน . ใน email เพราะ Firebase ไม่อนุญาต . ใน key path
-    function encodeEmail(email) {
-      return email.replace(/\./g, ',');
+    function loadEmployees() {
+      db.ref("employees").once("value", snapshot => {
+        allEmployees = [];
+        snapshot.forEach(child => {
+          allEmployees.push(child.val());
+        });
+        displayEmployees();
+      });
     }
 
     function displayEmployees() {
@@ -247,12 +258,12 @@
       });
 
       employeeTableBody.innerHTML = filtered.map(emp => `
-        <tr>
-          <td>${emp.name || "-"}</td>
-          <td>${emp.nickname || "-"}</td>
-          <td>${emp.department || "-"}</td>
-        </tr>
-      `).join('') || `<tr><td colspan="3" class="text-center">ไม่พบพนักงาน</td></tr>`;
+      <tr>
+        <td>${emp.name || "-"}</td>
+        <td>${emp.nickname || "-"}</td>
+        <td>${emp.department || "-"}</td>
+      </tr>
+    `).join('') || `<tr><td colspan="3" class="text-center">ไม่พบพนักงาน</td></tr>`;
     }
 
     function showAddModal() {
@@ -284,9 +295,8 @@
     document.getElementById("logoutBtn").addEventListener("click", () => {
       firebase.auth().signOut().then(() => location.href = "login.html");
     });
-
-    loadEmployees();
   </script>
+
 </body>
 
 </html>
