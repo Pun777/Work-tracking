@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ระบบติดตามงาน - แผนก IT</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;600&display=swap" rel="stylesheet">
   <style>
     body {
@@ -43,14 +43,14 @@
 
     h1 {
       font-size: 3rem;
-      color: #a85304;
+      color: #dff706;
       margin-bottom: 1rem;
     }
 
     nav a {
       margin-left: 1rem;
       font-weight: 500;
-      color: rgba(238, 126, 7, 0.765);
+      color:rgba(253, 249, 3, 0.765);
       text-decoration: none;
     }
 
@@ -87,7 +87,6 @@
 
 <body>
   <div class="background-image-blur"></div>
-
   <header>
     <h1>Tracking</h1>
     <nav>
@@ -99,9 +98,8 @@
       <a href="#" id="logoutBtn">ออกจากระบบ</a>
     </nav>
   </header>
-
   <div class="toolbar">
-    <button id="addTaskBtn" class="btn btn-primary d-none" onclick="showAddModal()">+ เพิ่มงาน</button>
+    <button id="addTaskBtn" class="btn btn-primary" onclick="showAddModal()">+ เพิ่มงาน</button>
     <input type="text" class="form-control" id="searchInput" placeholder="ค้นหาชื่องาน / ผู้รับผิดชอบ">
     <select class="form-select" id="statusFilter">
       <option value="">-- กรองตามสถานะ --</option>
@@ -120,12 +118,9 @@
       <option value="ผู้บริหาร">ผู้บริหาร</option>
     </select>
   </div>
-
   <div class="container mt-3">
     <div class="row" id="taskCardContainer"></div>
   </div>
-
-  <!-- Modal เพิ่มงาน -->
   <div class="modal fade" id="addTaskModal" tabindex="-1">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -141,9 +136,10 @@
             </div>
             <div class="mb-2"><label>วันสิ้นสุด</label><input type="date" class="form-control" id="endDate" required>
             </div>
-            <div class="mb-2">
-              <label>แผนก</label>
-              <select class="form-select" id="department" required>
+            <div class="mb-2"><label>ผู้แจ้ง</label><input type="text" class="form-control" id="reporter" required>
+            </div>
+            <div class="mb-2"><label>แผนกผู้แจ้ง</label>
+              <select class="form-select" id="position" required>
                 <option value="">-- เลือกแผนก --</option>
                 <option value="IT">IT</option>
                 <option value="เซลล์">เซลล์</option>
@@ -153,12 +149,16 @@
                 <option value="ผู้บริหาร">ผู้บริหาร</option>
               </select>
             </div>
+            <div class="mb-2"><label>แผนกผู้รับผิดชอบ</label>
+              <select class="form-select" id="department" required></select>
+            </div>
             <div class="mb-2"><label>ผู้รับผิดชอบ</label><select class="form-select" id="assignee" required></select>
             </div>
             <div class="mb-2"><label>สถานะ</label>
               <select class="form-select" id="status" required>
                 <option value="⏳">⏳ รอดำเนินการ</option>
                 <option value="⚠️">⚠️ ดำเนินการอยู่</option>
+                <option value="✅">✅ เสร็จสิ้น</option>
                 <option value="❌">❌ ยังไม่เริ่ม</option>
               </select>
             </div>
@@ -171,105 +171,91 @@
       </div>
     </div>
   </div>
-
-  <!-- Firebase & Script -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
   <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyAorLJyboatrj9ocyiNWE1YF--J9tRyFnw",
-      authDomain: "v1app-5eebb.firebaseapp.com",
-      databaseURL: "https://v1app-5eebb-default-rtdb.firebaseio.com",
-      projectId: "v1app-5eebb",
-      storageBucket: "v1app-5eebb.appspot.com",
-      messagingSenderId: "660883664493",
-      appId: "1:660883664493:web:369aab25e626c968381964"
-    };
+    const firebaseConfig = { apiKey: "AIzaSyAorLJyboatrj9ocyiNWE1YF--J9tRyFnw", authDomain: "v1app-5eebb.firebaseapp.com", databaseURL: "https://v1app-5eebb-default-rtdb.firebaseio.com", projectId: "v1app-5eebb", storageBucket: "v1app-5eebb.appspot.com", messagingSenderId: "660883664493", appId: "1:660883664493:web:369aab25e626c968381964" };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
-    let isAdmin = false;
     const addTaskModal = new bootstrap.Modal(document.getElementById("addTaskModal"));
     let editingTaskId = null;
 
-    firebase.auth().onAuthStateChanged(async (user) => {
+    firebase.auth().onAuthStateChanged(user => {
       if (user) {
-        const uid = user.uid;
-        const snapshot = await db.ref('users/' + uid).get();
-        if (snapshot.exists()) {
-          isAdmin = snapshot.val().role === 'admin';
-          if (isAdmin) {
-            document.getElementById("addTaskBtn").classList.remove("d-none");
-            document.getElementById("adminMenuLink").style.display = "inline-block";
-          }
-        }
+        // โหลดงาน
         loadTasks();
+
+        // ตรวจ role จาก users/{uid}/role
+        db.ref("users/" + user.uid).once("value", snap => {
+          const userData = snap.val();
+          if (userData && userData.role === "admin") {
+            document.getElementById("adminMenuLink").style.display = "inline";
+          }
+        });
+
       } else {
         location.href = "login.html";
       }
     });
 
-    document.getElementById("department").addEventListener("change", loadAssigneeOptions);
-    document.getElementById("searchInput").addEventListener("input", loadTasks);
-    document.getElementById("statusFilter").addEventListener("change", loadTasks);
-    document.getElementById("deptFilter").addEventListener("change", loadTasks);
+    function getProgressBarClass(p) {
+      if (p === 100) return "bg-success";
+      if (p >= 51) return "bg-info";
+      if (p >= 1) return "bg-warning";
+      return "bg-secondary";
+    }
 
     function showAddModal() {
       document.getElementById("addTaskForm").reset();
       editingTaskId = null;
+      loadDepartments();
+      loadAssigneesFromDepartment();
       addTaskModal.show();
     }
 
-    function loadAssigneeOptions() {
+    function loadDepartments() {
+      const departmentSelect = document.getElementById("department");
+      const departments = ["", "IT", "เซลล์", "โอพี", "บัญชี", "ตั๋ว", "ผู้บริหาร"];
+      departmentSelect.innerHTML = departments.map(d => `<option value="${d}">${d || "-- เลือกแผนก --"}</option>`).join("");
+    }
+
+    function loadAssigneesFromDepartment() {
       const dept = document.getElementById("department").value;
       const assigneeSelect = document.getElementById("assignee");
       assigneeSelect.innerHTML = "<option value=''>-- เลือกผู้รับผิดชอบ --</option>";
       if (!dept) return;
-      db.ref("employees").orderByChild("department").equalTo(dept).once("value", (snapshot) => {
-        snapshot.forEach((childSnapshot) => {
-          const emp = childSnapshot.val();
-          const option = document.createElement("option");
-          option.value = emp.nickname;
-          option.textContent = emp.nickname + " (" + emp.name + ")";
-          assigneeSelect.appendChild(option);
+      db.ref("employees").orderByChild("department").equalTo(dept).once("value", snap => {
+        if (!snap.exists()) console.warn("ไม่พบพนักงานในแผนก:", dept);
+        snap.forEach(child => {
+          const emp = child.val();
+          const opt = document.createElement("option");
+          opt.value = emp.nickname;
+          opt.textContent = `${emp.nickname} (${emp.name})`;
+          assigneeSelect.appendChild(opt);
         });
       });
     }
-
-    function getProgressBarClass(progress) {
-      if (progress === 100) return "bg-success";
-      if (progress >= 51) return "bg-info";
-      if (progress >= 1) return "bg-warning";
-      return "bg-secondary";
-    }
+    document.getElementById("department").addEventListener("change", loadAssigneesFromDepartment);
 
     function loadTasks() {
-      const taskCardContainer = document.getElementById("taskCardContainer");
+      const container = document.getElementById("taskCardContainer");
+      container.innerHTML = "";
       const search = document.getElementById("searchInput").value.toLowerCase();
       const status = document.getElementById("statusFilter").value;
       const dept = document.getElementById("deptFilter").value;
-      taskCardContainer.innerHTML = "";
 
-      db.ref("tasks").once("value", (snapshot) => {
-        snapshot.forEach((childSnapshot) => {
-          const task = childSnapshot.val();
+      db.ref("tasks").once("value", snapshot => {
+        snapshot.forEach(child => {
+          const task = child.val();
           const progress = parseInt(task.progress || 0);
-
-          const matchesSearch = task.taskName.toLowerCase().includes(search) || task.assigneeName.toLowerCase().includes(search);
-          const matchesStatus = !status || task.status === status;
-          const matchesDept = !dept || task.department === dept;
-
-          if (matchesSearch && matchesStatus && matchesDept) {
+          const matchSearch = task.taskName.toLowerCase().includes(search) || task.assigneeName.toLowerCase().includes(search);
+          const matchStatus = !status || task.status === status;
+          const matchDept = !dept || task.department === dept;
+          if (matchSearch && matchStatus && matchDept) {
             const card = document.createElement("div");
             card.className = "col-md-4 mb-3";
-
-            const manageBtn = isAdmin
-              ? `<div class="mt-2">
-                  <button class="btn btn-sm btn-warning me-2" onclick="editTask('${childSnapshot.key}')">📝</button>
-                  <button class="btn btn-sm btn-danger" onclick="deleteTask('${childSnapshot.key}')">🗑️</button>
-                </div>` : "";
-
             card.innerHTML = `
               <div class="card shadow-sm">
                 <div class="card-body">
@@ -278,80 +264,88 @@
                     👤 <strong>${task.assigneeName}</strong><br>
                     🏢 ${task.department}<br>
                     📅 ${task.startDate} ถึง ${task.endDate}<br>
+                    🏷️ ผู้แจ้ง: ${task.reporter || "-"}<br>
+                    💼 ตำแหน่ง: ${task.position || "-"}<br>
                     🔖 สถานะ: ${task.status}
                   </p>
                   <div class="progress mb-2">
                     <div class="progress-bar ${getProgressBarClass(progress)}" style="width:${progress}%">${progress}%</div>
                   </div>
-                  ${manageBtn}
+                  <div class="mt-2">
+                    <button class="btn btn-sm btn-warning me-2" onclick="editTask('${child.key}')">📝</button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteTask('${child.key}')">🗑️</button>
+                  </div>
                 </div>
-              </div>
-            `;
-            taskCardContainer.appendChild(card);
+              </div>`;
+            container.appendChild(card);
           }
         });
       });
     }
 
-    function deleteTask(taskId) {
-      if (confirm("คุณแน่ใจหรือไม่ว่าต้องการลบงานนี้?")) {
-        db.ref("tasks/" + taskId).remove().then(() => {
-          alert("ลบงานเรียบร้อยแล้ว");
-          loadTasks();
-        });
-      }
-    }
-
-    document.getElementById("addTaskForm").addEventListener("submit", async function (e) {
-      e.preventDefault();
-      const taskName = document.getElementById("taskName").value;
-      const startDate = document.getElementById("startDate").value;
-      const endDate = document.getElementById("endDate").value;
-      const department = document.getElementById("department").value;
-      const assignee = document.getElementById("assignee").value;
-      let status = document.getElementById("status").value;
-      const progress = parseInt(document.getElementById("progress").value);
-      if (progress === 100) status = "✅";
-
-      const taskData = { taskName, startDate, endDate, department, assigneeName: assignee, status, progress };
-
-      if (editingTaskId) {
-        await db.ref("tasks/" + editingTaskId).update({ ...taskData, updatedAt: new Date().toISOString() });
-        editingTaskId = null;
-      } else {
-        await db.ref("tasks").push({ ...taskData, createdAt: new Date().toISOString() });
-      }
-
-      document.getElementById("addTaskForm").reset();
-      document.getElementById("successMsg").style.display = "block";
-      setTimeout(() => {
-        addTaskModal.hide();
-        document.getElementById("successMsg").style.display = "none";
-        loadTasks();
-      }, 1000);
-    });
-
     function editTask(taskId) {
-      db.ref("tasks/" + taskId).once("value", (snapshot) => {
-        const task = snapshot.val();
+      db.ref("tasks/" + taskId).once("value", snap => {
+        const task = snap.val();
         document.getElementById("taskName").value = task.taskName;
         document.getElementById("startDate").value = task.startDate;
         document.getElementById("endDate").value = task.endDate;
+        document.getElementById("reporter").value = task.reporter || "";
+        document.getElementById("position").value = task.position || "";
+        document.getElementById("status").value = task.status;
+        document.getElementById("progress").value = task.progress;
         document.getElementById("department").value = task.department;
-        loadAssigneeOptions();
+        loadAssigneesFromDepartment();
         setTimeout(() => {
           document.getElementById("assignee").value = task.assigneeName;
         }, 300);
-        document.getElementById("status").value = task.status;
-        document.getElementById("progress").value = task.progress;
         editingTaskId = taskId;
         addTaskModal.show();
       });
     }
 
+    function deleteTask(taskId) {
+      if (confirm("คุณแน่ใจหรือไม่ว่าต้องการลบงานนี้?")) {
+        db.ref("tasks/" + taskId).remove().then(loadTasks);
+      }
+    }
+
+    document.getElementById("addTaskForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      const progressVal = parseInt(document.getElementById("progress").value) || 0;
+      const taskData = {
+        taskName: document.getElementById("taskName").value.trim(),
+        startDate: document.getElementById("startDate").value,
+        endDate: document.getElementById("endDate").value,
+        department: document.getElementById("department").value,
+        assigneeName: document.getElementById("assignee").value,
+        reporter: document.getElementById("reporter").value,
+        position: document.getElementById("position").value,
+        status: document.getElementById("status").value,
+        progress: progressVal
+      };
+      if (progressVal === 100) taskData.status = "✅";
+      if (editingTaskId) {
+        await db.ref("tasks/" + editingTaskId).update(taskData);
+        editingTaskId = null;
+      } else {
+        await db.ref("tasks").push(taskData);
+      }
+      document.getElementById("successMsg").style.display = "block";
+      document.getElementById("addTaskForm").reset();
+      setTimeout(() => {
+        addTaskModal.hide();
+        loadTasks();
+        document.getElementById("successMsg").style.display = "none";
+      }, 1000);
+    });
+
     document.getElementById("logoutBtn").addEventListener("click", () => {
       firebase.auth().signOut().then(() => location.href = "login.html");
     });
+
+    document.getElementById("searchInput").addEventListener("input", loadTasks);
+    document.getElementById("statusFilter").addEventListener("change", loadTasks);
+    document.getElementById("deptFilter").addEventListener("change", loadTasks);
   </script>
 </body>
 
