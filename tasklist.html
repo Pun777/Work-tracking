@@ -50,7 +50,7 @@
     nav a {
       margin-left: 1rem;
       font-weight: 500;
-      color:rgba(253, 249, 3, 0.765);
+      color: rgba(253, 249, 3, 0.765);
       text-decoration: none;
     }
 
@@ -102,11 +102,13 @@
     <button id="addTaskBtn" class="btn btn-primary" onclick="showAddModal()">+ เพิ่มงาน</button>
     <input type="text" class="form-control" id="searchInput" placeholder="ค้นหาชื่องาน / ผู้รับผิดชอบ">
     <select class="form-select" id="statusFilter">
+
       <option value="">-- กรองตามสถานะ --</option>
       <option value="⏳">⏳ รอดำเนินการ</option>
       <option value="⚠️">⚠️ ดำเนินการอยู่</option>
       <option value="✅">✅ เสร็จสิ้น</option>
       <option value="❌">❌ ยังไม่เริ่ม</option>
+
     </select>
     <select class="form-select" id="deptFilter">
       <option value="">-- กรองตามแผนก --</option>
@@ -156,10 +158,11 @@
             </div>
             <div class="mb-2"><label>สถานะ</label>
               <select class="form-select" id="status" required>
+                <option value="❌">❌ ยังไม่เริ่ม</option>
                 <option value="⏳">⏳ รอดำเนินการ</option>
                 <option value="⚠️">⚠️ ดำเนินการอยู่</option>
                 <option value="✅">✅ เสร็จสิ้น</option>
-                <option value="❌">❌ ยังไม่เริ่ม</option>
+
               </select>
             </div>
             <div class="mb-2"><label>% ความคืบหน้า</label><input type="number" class="form-control" id="progress"

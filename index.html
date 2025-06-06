@@ -5,7 +5,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>แดชบอร์ดติดตามงาน</title>
-
   <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;600&display=swap" rel="stylesheet">
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
@@ -88,11 +87,14 @@
 
     .filter-select {
       display: flex;
-      justify-content: flex-end;
+      flex-wrap: wrap;
+      gap: 1rem;
       margin-bottom: 1rem;
     }
 
-    .filter-select select {
+    .filter-select select,
+    .filter-select input[type="text"],
+    .filter-select input[type="date"] {
       padding: 0.5rem 1rem;
       border-radius: 8px;
       font-size: 1rem;
@@ -109,6 +111,19 @@
       box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
       border-radius: 12px;
       overflow: hidden;
+    }
+
+    thead,
+    tbody tr {
+      display: table;
+      width: 100%;
+      table-layout: fixed;
+    }
+
+    tbody {
+      display: block;
+      max-height: 300px;
+      overflow-y: auto;
     }
 
     th,
@@ -134,8 +149,9 @@
 
 <body>
   <div class="background-image-blur"></div>
+
   <header>
-    <h1>Tracking </h1>
+    <h1>Tracking</h1>
     <nav>
       <a href="index.html">แดชบอร์ด</a>
       <a href="tasklist.html">รายการงาน</a>
@@ -155,19 +171,34 @@
     <section id="delayed-tasks">
       <h2>รายละเอียดงาน</h2>
       <div class="filter-select">
-        <select onchange="filterByStatus(this.value)">
+        <select id="statusFilter" onchange="filterTasks()">
           <option value="all">แสดงทั้งหมด</option>
           <option value="❌">ยังไม่เริ่ม</option>
           <option value="⏳">รอดำเนินการ</option>
           <option value="⚠️">กำลังดำเนินการ</option>
           <option value="✅">เสร็จแล้ว</option>
         </select>
+        <select id="departmentFilter" onchange="filterTasks()">
+          <option value="all">ทุกแผนก</option>
+          <option value="IT">ไอที</option>
+          <option value="OP">โอพี</option>
+          <option value="Sales">เซลล์</option>
+          <option value="Account">บัญชี</option>
+          <option value="Ticket">ตั๋ว</option>
+          <option value="Executive">ผู้บริหาร</option>
+        </select>
+        <input type="text" id="assigneeSearch" placeholder="ค้นหาผู้รับผิดชอบ" oninput="filterTasks()" />
+        <input type="text" id="reporterSearch" placeholder="ค้นหาผู้แจ้ง" oninput="filterTasks()" />
+        <input type="date" id="startDateFilter" onchange="filterTasks()" />
+        
       </div>
+
       <table id="delayed-table">
         <thead>
           <tr>
             <th>งานที่ทำ</th>
             <th>ผู้รับผิดชอบ</th>
+            <th>ผู้แจ้ง</th>
             <th>วันเริ่มต้น</th>
             <th>วันสิ้นสุด</th>
             <th>สถานะ</th>
@@ -212,8 +243,8 @@
     db.ref("tasks").on("value", snapshot => {
       const tasks = snapshot.val();
       allTasks = Object.values(tasks || {});
-      renderDelayedTable(allTasks);
       renderStatusCards(allTasks);
+      filterTasks();
     });
 
     function renderDelayedTable(taskList) {
@@ -225,17 +256,19 @@
         const status = task.status || "⏳";
         if (endDate < now || status !== "✅") {
           tbody.innerHTML += `
-            <tr>
-              <td>${task.taskName}</td>
-              <td>${task.assigneeName} (${task.department})</td>
-              <td>${task.startDate}</td>
-              <td>${task.endDate}</td>
-              <td>${status}</td>
-            </tr>
-          `;
+        <tr>
+          <td>${task.taskName}</td>
+          <td>${task.assigneeName} (${task.department})</td>
+          <td>${task.reporter || "-"}</td>
+          <td>${task.startDate}</td>
+          <td>${task.endDate}</td>
+          <td>${status}</td>
+        </tr>
+      `;
         }
       });
     }
+
 
     function renderStatusCards(taskList) {
       const summary = { "❌": 0, "⏳": 0, "⚠️": 0 };
@@ -261,13 +294,44 @@
       }
     }
 
-    function filterByStatus(status) {
-      if (status === 'all') {
-        renderDelayedTable(allTasks);
-      } else {
-        const filtered = allTasks.filter(task => (task.status || "⏳") === status);
-        renderDelayedTable(filtered);
+    function filterTasks() {
+      const statusFilter = document.getElementById("statusFilter").value;
+      const deptFilter = document.getElementById("departmentFilter").value;
+      const assigneeSearch = document.getElementById("assigneeSearch").value.trim().toLowerCase();
+      const reporterSearch = document.getElementById("reporterSearch").value.trim().toLowerCase();
+      const startDateFilter = document.getElementById("startDateFilter").value;
+
+      let filtered = allTasks;
+
+      if (statusFilter !== "all") {
+        filtered = filtered.filter(task => (task.status || "⏳") === statusFilter);
       }
+
+      if (deptFilter !== "all") {
+        filtered = filtered.filter(task => task.department === deptFilter);
+      }
+
+      if (assigneeSearch !== "") {
+        filtered = filtered.filter(task =>
+          task.assigneeName?.toLowerCase().includes(assigneeSearch)
+        );
+      }
+
+      filtered = filtered.filter(task =>
+        task.reporter?.toLowerCase().includes(reporterSearch)
+      );
+
+
+
+      if (startDateFilter !== "") {
+        const startDate = new Date(startDateFilter);
+        filtered = filtered.filter(task => {
+          const taskStart = new Date(task.startDate);
+          return taskStart >= startDate;
+        });
+      }
+
+      renderDelayedTable(filtered);
     }
   </script>
 </body>
