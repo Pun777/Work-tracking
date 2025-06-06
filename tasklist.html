@@ -10,18 +10,64 @@
   <style>
     body {
       font-family: 'Prompt', sans-serif;
-      background-image: url('green.jpg');
-      /* เปลี่ยนชื่อเป็นไฟล์ภาพของคุณ */
+      background-image: url('green.png');
       background-size: cover;
-      /* ปรับให้เต็มหน้าจอ */
       background-position: center;
       background-repeat: no-repeat;
       margin: 0;
       color: #333;
     }
 
+    .background-image-blur {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-image: url('green.png');
+      background-size: cover;
+      background-position: center;
+      filter: blur(8px) brightness(0.6);
+      z-index: -1;
+    }
+
+    header {
+      background-color: #5b9b0860;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-radius: 0 0 12px 12px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      font-size: 3rem;
+      color: #a85304;
+      margin-bottom: 1rem;
+    }
+
+    nav a {
+      margin-left: 1rem;
+      font-weight: 500;
+      color: rgba(238, 126, 7, 0.765);
+      text-decoration: none;
+    }
+
     a:hover {
       text-decoration: underline;
+    }
+
+    .card {
+      border-radius: 12px;
+      background-color: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(8px);
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
     }
 
     .toolbar {
@@ -36,53 +82,21 @@
     .toolbar select {
       max-width: 200px;
     }
-
-    table {
-      background: rgba(255, 255, 255, 0.9);
-      border-radius: 8px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
-
-    th {
-      background-color: #2ee75d;
-      color: white;
-      text-align: center;
-    }
-
-    td {
-      background-color: rgba(255, 255, 255, 0.7);
-      vertical-align: middle;
-    }
-
-    table,
-    th,
-    td {
-      border: 1px solid #ddd;
-    }
-
-    tbody tr:hover {
-      background-color: rgba(144, 238, 144, 0.2);
-    }
   </style>
 </head>
 
 <body>
-  <header
-    style="background-color: #2ee75d; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; border-radius: 6px 6px 0 0;">
-    <h1 style="margin: 0; font-size: 1.8rem; font-weight: bold;">Tracking</h1>
+  <div class="background-image-blur"></div>
+
+  <header>
+    <h1>Tracking</h1>
     <nav>
-      <a href="index.html"
-        style="margin-left: 1rem; font-weight: 500; color: black; text-decoration: none;">แดชบอร์ด</a>
-      <a href="tasklist.html"
-        style="margin-left: 1rem; font-weight: 500; color: black; text-decoration: none;">รายการงาน</a>
-      <a href="calendar.html"
-        style="margin-left: 1rem; font-weight: 500; color: black; text-decoration: none;">ปฏิทิน</a>
-      <a href="employee.html"
-        style="margin-left: 1rem; font-weight: 500; color: black; text-decoration: none;">พนักงาน</a>
-      <a href="admin.html" id="adminMenuLink"
-        style="margin-left: 1rem; font-weight: 500; color: black; text-decoration: none; display: none;">แอดมิน</a>
-      <a href="#" id="logoutBtn"
-        style="margin-left: 1rem; font-weight: 500; color: black; text-decoration: none;">ออกจากระบบ</a>
+      <a href="index.html">แดชบอร์ด</a>
+      <a href="tasklist.html">รายการงาน</a>
+      <a href="calendar.html">ปฏิทิน</a>
+      <a href="employee.html">พนักงาน</a>
+      <a href="admin.html" id="adminMenuLink" style="display: none;">แอดมิน</a>
+      <a href="#" id="logoutBtn">ออกจากระบบ</a>
     </nav>
   </header>
 
@@ -107,22 +121,8 @@
     </select>
   </div>
 
-  <div class="container">
-    <table class="table table-bordered mt-3">
-      <thead>
-        <tr>
-          <th>ชื่องาน</th>
-          <th>ผู้รับผิดชอบ</th>
-          <th>แผนก</th>
-          <th>วันเริ่ม</th>
-          <th>วันสิ้นสุด</th>
-          <th>สถานะ</th>
-          <th>% ความคืบหน้า</th>
-          <th id="adminColumnHeader" class="d-none">จัดการ</th>
-        </tr>
-      </thead>
-      <tbody id="taskTableBody"></tbody>
-    </table>
+  <div class="container mt-3">
+    <div class="row" id="taskCardContainer"></div>
   </div>
 
   <!-- Modal เพิ่มงาน -->
@@ -172,7 +172,7 @@
     </div>
   </div>
 
-  <!-- Scripts -->
+  <!-- Firebase & Script -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
@@ -187,7 +187,6 @@
       messagingSenderId: "660883664493",
       appId: "1:660883664493:web:369aab25e626c968381964"
     };
-
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
     let isAdmin = false;
@@ -202,7 +201,6 @@
           isAdmin = snapshot.val().role === 'admin';
           if (isAdmin) {
             document.getElementById("addTaskBtn").classList.remove("d-none");
-            document.getElementById("adminColumnHeader").classList.remove("d-none");
             document.getElementById("adminMenuLink").style.display = "inline-block";
           }
         }
@@ -212,16 +210,16 @@
       }
     });
 
+    document.getElementById("department").addEventListener("change", loadAssigneeOptions);
+    document.getElementById("searchInput").addEventListener("input", loadTasks);
+    document.getElementById("statusFilter").addEventListener("change", loadTasks);
+    document.getElementById("deptFilter").addEventListener("change", loadTasks);
+
     function showAddModal() {
       document.getElementById("addTaskForm").reset();
       editingTaskId = null;
       addTaskModal.show();
     }
-
-    document.getElementById("department").addEventListener("change", loadAssigneeOptions);
-    document.getElementById("searchInput").addEventListener("input", loadTasks);
-    document.getElementById("statusFilter").addEventListener("change", loadTasks);
-    document.getElementById("deptFilter").addEventListener("change", loadTasks);
 
     function loadAssigneeOptions() {
       const dept = document.getElementById("department").value;
@@ -247,11 +245,11 @@
     }
 
     function loadTasks() {
-      const taskTableBody = document.getElementById("taskTableBody");
+      const taskCardContainer = document.getElementById("taskCardContainer");
       const search = document.getElementById("searchInput").value.toLowerCase();
       const status = document.getElementById("statusFilter").value;
       const dept = document.getElementById("deptFilter").value;
-      taskTableBody.innerHTML = "";
+      taskCardContainer.innerHTML = "";
 
       db.ref("tasks").once("value", (snapshot) => {
         snapshot.forEach((childSnapshot) => {
@@ -263,30 +261,33 @@
           const matchesDept = !dept || task.department === dept;
 
           if (matchesSearch && matchesStatus && matchesDept) {
-            const tr = document.createElement("tr");
+            const card = document.createElement("div");
+            card.className = "col-md-4 mb-3";
 
-            const manageCol = isAdmin
-              ? `<td>
-                  <button class="btn btn-sm btn-warning me-1" onclick="editTask('${childSnapshot.key}')">📝</button>
+            const manageBtn = isAdmin
+              ? `<div class="mt-2">
+                  <button class="btn btn-sm btn-warning me-2" onclick="editTask('${childSnapshot.key}')">📝</button>
                   <button class="btn btn-sm btn-danger" onclick="deleteTask('${childSnapshot.key}')">🗑️</button>
-                </td>`
-              : "";
+                </div>` : "";
 
-            tr.innerHTML = `
-              <td>${task.taskName}</td>
-              <td>${task.assigneeName}</td>
-              <td>${task.department}</td>
-              <td>${task.startDate}</td>
-              <td>${task.endDate}</td>
-              <td>${task.status}</td>
-              <td>
-                <div class="progress">
-                  <div class="progress-bar ${getProgressBarClass(progress)}" style="width:${progress}%">${progress}%</div>
+            card.innerHTML = `
+              <div class="card shadow-sm">
+                <div class="card-body">
+                  <h5 class="card-title">${task.taskName}</h5>
+                  <p class="card-text">
+                    👤 <strong>${task.assigneeName}</strong><br>
+                    🏢 ${task.department}<br>
+                    📅 ${task.startDate} ถึง ${task.endDate}<br>
+                    🔖 สถานะ: ${task.status}
+                  </p>
+                  <div class="progress mb-2">
+                    <div class="progress-bar ${getProgressBarClass(progress)}" style="width:${progress}%">${progress}%</div>
+                  </div>
+                  ${manageBtn}
                 </div>
-              </td>
-              ${manageCol}
+              </div>
             `;
-            taskTableBody.appendChild(tr);
+            taskCardContainer.appendChild(card);
           }
         });
       });
@@ -348,7 +349,6 @@
       });
     }
 
-    // ออกจากระบบ
     document.getElementById("logoutBtn").addEventListener("click", () => {
       firebase.auth().signOut().then(() => location.href = "login.html");
     });

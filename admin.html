@@ -13,168 +13,211 @@
   <style>
     body {
       font-family: 'Prompt', sans-serif;
-      background-image: url('green.jpg');
+      background-image: url('green.png');
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
       margin: 0;
-      color: #333;
+      color: #fff;
     }
 
-    .header-bar {
-      margin-bottom: 2rem;
+    .background-image-blur {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-image: url('green.png');
+      background-size: cover;
+      background-position: center;
+      filter: blur(8px) brightness(0.6);
+      z-index: -1;
+    }
+
+    header {
+      background-color: #5b9b0860;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-radius: 0 0 12px 12px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+
+    nav a {
+      margin-left: 1rem;
+      font-weight: 500;
+      color: rgba(238, 126, 7, 0.9);
+      text-decoration: none;
+    }
+
+    nav a:hover {
+      text-decoration: underline;
+    }
+    h1 {
+      font-size: 3rem;
+      color: #a85304;
+      margin-bottom: 1rem;
     }
 
     h2 {
       font-weight: 600;
-      color: #000000fb;
+      color:#f5d106;
       background-color: rgba(255, 255, 255, 0);
       padding: 1rem;
       border-radius: 10px;
-    }
-
-    table {
-      background: rgba(255, 255, 255, 0.9);
-      border-radius: 10px;
-      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
-      overflow: hidden;
-    }
-
-    th {
-      background-color: #43a047;
-      color: white;
       text-align: center;
     }
 
-    td {
-      background-color: rgba(255, 255, 255, 0.7);
-      vertical-align: middle;
+    .card-user {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(8px);
+      border-radius: 16px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      color: #fff;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+      transition: transform 0.2s ease;
     }
 
-    tbody tr:hover {
-      background-color: rgba(200, 230, 201, 0.5);
+    .card-user:hover {
+      transform: translateY(-4px);
     }
 
-    .btn-edit {
-      font-weight: bold;
-      font-size: 0.85rem;
+    .card-user .email {
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .card-user .role {
+      font-size: 0.9rem;
+      color: #ffc107;
+    }
+
+    .card-user .btn {
+      margin-right: 0.4rem;
+      margin-top: 0.5rem;
+    }
+
+    .container {
+      margin-top: 2rem;
     }
   </style>
-
-
 </head>
 
 <body>
-  <div class="header-bar">
-    <header
-      style="background-color: #2ee75d; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; border-radius: 6px 6px 0 0;">
-      <h1 style="margin: 0; font-size: 1.8rem; font-weight: bold;">Tracking</h1>
-      <nav>
-        <a href="index.html"
-          style="margin-left: 1rem; font-weight: 500; color: black; text-decoration: none;">แดชบอร์ด</a>
-        <a href="tasklist.html"
-          style="margin-left: 1rem; font-weight: 500; color: black; text-decoration: none;">รายการงาน</a>
-        <a href="calendar.html"
-          style="margin-left: 1rem; font-weight: 500; color: black; text-decoration: none;">ปฏิทิน</a>
-        <a href="employee.html"
-          style="margin-left: 1rem; font-weight: 500; color: black; text-decoration: none;">พนักงาน</a>
-        <a href="admin.html" id="adminMenuLink"
-          style="margin-left: 1rem; font-weight: 500; color: black; text-decoration: none; display: none;">แอดมิน</a>
-        <a href="#" id="logoutBtn"
-          style="margin-left: 1rem; font-weight: 500; color: black; text-decoration: none;">ออกจากระบบ</a>
-      </nav>
-    </header>
+  <div class="background-image-blur"></div>
 
-    <div class="container">
-      <h2 class="text-center mb-4">👤 ผู้ใช้ทั้งหมด (สำหรับผู้ดูแลระบบ)</h2>
-      <table class="table table-bordered table-striped" id="usersTable">
-        <thead>
-          <tr>
-            <th>อีเมล</th>
-            <th>สิทธิ์</th>
-            <th>จัดการ</th>
-          </tr>
-        </thead>
-        <tbody id="usersBody">
-          <!-- Users will be loaded here -->
-        </tbody>
-      </table>
+  <header>
+    <h1 style="margin: 0; font-size: 1.8rem;">Tracking</h1>
+    <nav>
+      <a href="index.html">แดชบอร์ด</a>
+      <a href="tasklist.html">รายการงาน</a>
+      <a href="calendar.html">ปฏิทิน</a>
+      <a href="employee.html">พนักงาน</a>
+      <a href="admin.html" id="adminMenuLink" style="display: none;">แอดมิน</a>
+      <a href="#" id="logoutBtn">ออกจากระบบ</a>
+    </nav>
+  </header>
 
-    </div>
+  <div class="container">
+    <h2>👤 ผู้ใช้ทั้งหมด (สำหรับผู้ดูแลระบบ)</h2>
+    <div class="row" id="usersCardContainer"></div>
+  </div>
 
-    <script>
-      const firebaseConfig = {
-        apiKey: "AIzaSyAorLJyboatrj9ocyiNWE1YF--J9tRyFnw",
-        authDomain: "v1app-5eebb.firebaseapp.com",
-        databaseURL: "https://v1app-5eebb-default-rtdb.firebaseio.com",
-        projectId: "v1app-5eebb",
-        storageBucket: "v1app-5eebb.appspot.com",
-        messagingSenderId: "660883664493",
-        appId: "1:660883664493:web:369aab25e626c968381964"
-      };
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAorLJyboatrj9ocyiNWE1YF--J9tRyFnw",
+      authDomain: "v1app-5eebb.firebaseapp.com",
+      databaseURL: "https://v1app-5eebb-default-rtdb.firebaseio.com",
+      projectId: "v1app-5eebb",
+      storageBucket: "v1app-5eebb.appspot.com",
+      messagingSenderId: "660883664493",
+      appId: "1:660883664493:web:369aab25e626c968381964"
+    };
 
-      firebase.initializeApp(firebaseConfig);
-      const db = firebase.database();
-      const auth = firebase.auth();
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const auth = firebase.auth();
 
-      auth.onAuthStateChanged(user => {
-        if (user) {
-          db.ref(`users/${user.uid}/role`).once('value').then(snapshot => {
-            const role = snapshot.val();
-            if (role !== 'admin') {
-              alert("คุณไม่มีสิทธิ์เข้าถึงหน้านี้");
-              window.location.href = "index.html";
-            } else {
-              loadUsers();
-            }
-          });
-        } else {
-          window.location.href = "login.html";
-        }
-      });
-
-      function loadUsers() {
-        db.ref("users").once("value", snapshot => {
-          const users = snapshot.val();
-          const tbody = document.getElementById("usersBody");
-          tbody.innerHTML = "";
-          for (let uid in users) {
-            const user = users[uid];
-            const tr = document.createElement("tr");
-            tr.innerHTML = `
-          <td>${user.email || '-'}</td>
-          <td>${user.role || 'user'}</td>
-          <td>
-          <button class="btn btn-sm btn-warning btn-edit" onclick="editUser('${uid}')">แก้ไข</button>
-          <button class="btn btn-sm btn-secondary" onclick="changeRole('${uid}', '${user.role || 'user'}')">เปลี่ยนสิทธิ์</button>
-          </td>
-          `;
-            tbody.appendChild(tr);
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        db.ref(`users/${user.uid}/role`).once('value').then(snapshot => {
+          const role = snapshot.val();
+          if (role !== 'admin') {
+            alert("คุณไม่มีสิทธิ์เข้าถึงหน้านี้");
+            window.location.href = "index.html";
+          } else {
+            document.getElementById("adminMenuLink").style.display = "inline-block";
+            loadUsers();
           }
         });
+      } else {
+        window.location.href = "login.html";
       }
+    });
 
-      function editUser(uid) {
-        alert("ฟังก์ชันแก้ไขสำหรับ UID: " + uid + " ยังไม่ถูกพัฒนา");
-      }
+    function loadUsers() {
+      db.ref("users").once("value", snapshot => {
+        const users = snapshot.val();
+        const container = document.getElementById("usersCardContainer");
+        container.innerHTML = "";
 
-      function changeRole(uid, currentRole) {
-        const newRole = currentRole === "admin" ? "user" : "admin";
-        if (confirm(`คุณต้องการเปลี่ยนสิทธิ์เป็น "${newRole}" ใช่หรือไม่?`)) {
-          db.ref(`users/${uid}/role`).set(newRole).then(() => {
-            alert("เปลี่ยนสิทธิ์เรียบร้อยแล้ว");
-            loadUsers();
-          });
+        for (let uid in users) {
+          const user = users[uid];
+          const col = document.createElement("div");
+          col.className = "col-md-6 col-lg-4";
+
+          col.innerHTML = `
+            <div class="card-user">
+              <div class="email">📧 ${user.email || '-'}</div>
+              <div class="role">🛡️ สิทธิ์: ${user.role || 'user'}</div>
+              <div class="mt-2">
+                <button class="btn btn-sm btn-warning" onclick="editUser('${uid}')">แก้ไข</button>
+                <button class="btn btn-sm btn-secondary" onclick="changeRole('${uid}', '${user.role || 'user'}')">เปลี่ยนสิทธิ์</button>
+                <button class="btn btn-sm btn-danger" onclick="deleteUser('${uid}')">ลบ</button>
+              </div>
+            </div>
+          `;
+          container.appendChild(col);
         }
-      }
-      document.getElementById("logoutBtn").addEventListener("click", () => {
-        firebase.auth().signOut().then(() => {
-          location.href = "login.html";
-        }).catch((error) => {
-          alert("เกิดข้อผิดพลาดในการออกจากระบบ: " + error.message);
-        });
       });
-    </script>
+    }
+
+    function editUser(uid) {
+      alert("ฟังก์ชันแก้ไขสำหรับ UID: " + uid + " ยังไม่ถูกพัฒนา");
+    }
+
+    function changeRole(uid, currentRole) {
+      const newRole = currentRole === "admin" ? "user" : "admin";
+      if (confirm(`คุณต้องการเปลี่ยนสิทธิ์เป็น "${newRole}" ใช่หรือไม่?`)) {
+        db.ref(`users/${uid}/role`).set(newRole).then(() => {
+          alert("เปลี่ยนสิทธิ์เรียบร้อยแล้ว");
+          loadUsers();
+        });
+      }
+    }
+
+    function deleteUser(uid) {
+      if (confirm("คุณแน่ใจหรือไม่ว่าต้องการลบผู้ใช้นี้?")) {
+        db.ref("users/" + uid).remove().then(() => {
+          alert("ลบผู้ใช้เรียบร้อยแล้ว");
+          loadUsers();
+        }).catch(err => {
+          alert("เกิดข้อผิดพลาด: " + err.message);
+        });
+      }
+    }
+
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      firebase.auth().signOut().then(() => {
+        location.href = "login.html";
+      }).catch((error) => {
+        alert("เกิดข้อผิดพลาดในการออกจากระบบ: " + error.message);
+      });
+    });
+  </script>
 </body>
 
 </html>

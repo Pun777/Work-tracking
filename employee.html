@@ -6,13 +6,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>รายชื่อพนักงาน</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;600&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;600&display=swap" rel="stylesheet" />
-
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
   <style>
     body {
       font-family: 'Prompt', sans-serif;
-      background-image: url('green.jpg');
+      background-image: url('green.png');
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
@@ -20,8 +21,21 @@
       color: #333;
     }
 
+    .background-image-blur {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-image: url('green.png');
+      background-size: cover;
+      background-position: center;
+      filter: blur(8px) brightness(0.6);
+      z-index: -1;
+    }
+
     header {
-      background-color: #2ee75d;
+      background-color: #5b9b0860;
       padding: 1rem 2rem;
       display: flex;
       justify-content: space-between;
@@ -29,76 +43,81 @@
       border-radius: 0 0 12px 12px;
       box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
     }
+    
+    h1 {
+      font-size: 3rem;
+      color: #a85304;
+      margin-bottom: 1rem;
+    }
 
     nav a {
       margin-left: 1rem;
       font-weight: 500;
-      color: black;
+      color: rgba(238, 126, 7, 0.765);
       text-decoration: none;
     }
 
-    .container {
-      max-width: 1200px;
-      margin: 2rem auto;
-      padding: 1rem;
+    nav a:hover {
+      text-decoration: underline;
     }
 
-    .filter-bar {
-      max-width: 960px;
-      margin: 2rem auto 1rem auto;
+    .card {
+      border-radius: 12px;
+      background-color: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(8px);
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s ease;
     }
 
-    .table-container {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(10px);
+    .card:hover {
+      transform: translateY(-4px);
+    }
+
+    /* ✅ ใหม่: Toolbar กลางจอ */
+    .toolbar {
+      margin-top: 1.5rem;
+      flex-wrap: wrap;
+      background-color: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(6px);
       border-radius: 16px;
-      padding: 1.5rem;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-      max-width: 960px;
-      margin: 0 auto;
+      padding: 1rem;
+      max-width: 900px;
+      margin-left: auto;
+      margin-right: auto;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.95rem;
+    .custom-input,
+    .custom-select {
+      min-width: 220px;
+      max-width: 300px;
+      border-radius: 12px;
+      padding: 0.5rem 1rem;
+      background-color: rgba(255, 255, 255, 0.85);
+      border: 1px solid #ccc;
+      box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
     }
 
-    thead {
-      background: #d0ebff;
-      color: #094067;
+    .custom-add {
+      padding: 0.5rem 1.2rem;
+      border-radius: 12px;
+      font-weight: 600;
+      box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+      white-space: nowrap;
     }
 
-    td,
-    th {
-      padding: 0.75rem 1rem;
-      text-align: center;
-      border-bottom: 1px solid #e0e0e0;
-    }
-
-    tr:hover {
-      background-color: rgba(0, 0, 0, 0.02);
-    }
-
-    #addEmployeeBtn {
-      border-radius: 8px;
-      font-weight: bold;
-    }
-
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.5);
-      z-index: 9999;
+    @media (max-width: 576px) {
+      .toolbar {
+        flex-direction: column;
+        gap: 0.75rem;
+      }
     }
   </style>
 </head>
 
 <body>
+  <div class="background-image-blur"></div>
+
   <header>
     <h1 style="margin: 0; font-size: 1.8rem;">Tracking</h1>
     <nav>
@@ -111,61 +130,46 @@
     </nav>
   </header>
 
-  <div class="filter-bar px-3">
-    <div class="row g-2">
-      <div class="col-md-6">
-        <input type="text" id="searchInput" class="form-control" placeholder="ค้นหาชื่อหรือชื่อเล่น">
-      </div>
-      <div class="col-md-4">
-        <select id="filterDept" class="form-select">
-          <option value="">-- แสดงทุกแผนก --</option>
-          <option value="IT">IT</option>
-          <option value="เซลล์">เซลล์</option>
-          <option value="โอพี">โอพี</option>
-          <option value="บัญชี">บัญชี</option>
-          <option value="ตั๋ว">ตั๋ว</option>
-          <option value="ผู้บริหาร">ผู้บริหาร</option>
-        </select>
-      </div>
-      <div class="col-md-2">
-        <button class="btn btn-primary w-100" onclick="showAddModal()" id="addEmployeeBtn" style="display: none;">+
-          เพิ่ม</button>
-      </div>
-    </div>
+  <!-- ✅ Toolbar ใหม่ -->
+  <div class="toolbar d-flex justify-content-center align-items-center gap-2 p-3">
+    <input type="text" id="searchInput" class="form-control custom-input" placeholder="ค้นหาชื่อหรือชื่อเล่น">
+    <select id="filterDept" class="form-select custom-select">
+      <option value="">-- เลือกแผนก --</option>
+      <option value="IT">IT</option>
+      <option value="เซลล์">เซลล์</option>
+      <option value="โอพี">โอพี</option>
+      <option value="บัญชี">บัญชี</option>
+      <option value="ตั๋ว">ตั๋ว</option>
+      <option value="ผู้บริหาร">ผู้บริหาร</option>
+    </select>
+    <button class="btn btn-primary custom-add" onclick="showAddModal()" id="addEmployeeBtn" style="display:none;">
+      + เพิ่ม
+    </button>
   </div>
 
-  <div class="table-container mt-3">
-    <table>
-      <thead>
-        <tr>
-          <th>ชื่อจริง</th>
-          <th>ชื่อเล่น</th>
-          <th>แผนก</th>
-        </tr>
-      </thead>
-      <tbody id="employeeTableBody"></tbody>
-    </table>
+  <div class="container mt-3">
+    <div class="row" id="employeeCardContainer"></div>
   </div>
 
-  <!-- Modal เพิ่มพนักงาน -->
-  <div class="modal" id="addModal">
-    <div class="modal-dialog">
-      <div class="modal-content">
+  <!-- ✅ Modal -->
+  <div id="addModal" class="modal" tabindex="-1" style="display:none; background-color: rgba(0,0,0,0.5); position:fixed; top:0; left:0; width:100vw; height:100vh; z-index:1050;">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content p-3 rounded">
         <div class="modal-header">
-          <h5 class="modal-title">เพิ่มพนักงานใหม่</h5>
+          <h5 class="modal-title">เพิ่ม / แก้ไข พนักงาน</h5>
           <button type="button" class="btn-close" onclick="hideAddModal()"></button>
         </div>
-        <div class="modal-body">
-          <form id="addForm">
-            <div class="mb-3">
-              <label class="form-label">ชื่อจริง-นามสกุล</label>
-              <input type="text" class="form-control" id="empName" required>
+        <form id="addForm">
+          <div class="modal-body">
+            <div class="mb-2">
+              <label class="form-label">ชื่อจริง</label>
+              <input type="text" class="form-control" id="empName" required />
             </div>
-            <div class="mb-3">
+            <div class="mb-2">
               <label class="form-label">ชื่อเล่น</label>
-              <input type="text" class="form-control" id="empNickname">
+              <input type="text" class="form-control" id="empNickname" required />
             </div>
-            <div class="mb-3">
+            <div class="mb-2">
               <label class="form-label">แผนก</label>
               <select class="form-select" id="empDept" required>
                 <option value="">-- เลือกแผนก --</option>
@@ -177,25 +181,15 @@
                 <option value="ผู้บริหาร">ผู้บริหาร</option>
               </select>
             </div>
-            <div class="text-end">
-              <button type="submit" class="btn btn-success">บันทึก</button>
-              <button type="button" class="btn btn-secondary" onclick="hideAddModal()">ยกเลิก</button>
-            </div>
-          </form>
-        </div>
+          </div>
+          <div class="modal-footer d-flex justify-content-between">
+            <button type="submit" class="btn btn-success">💾 บันทึก</button>
+            <button type="button" class="btn btn-secondary" onclick="hideAddModal()">❌ ยกเลิก</button>
+          </div>
+        </form>
       </div>
     </div>
   </div>
-
-  <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
-
-  <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
 
   <script>
     const firebaseConfig = {
@@ -207,32 +201,29 @@
       messagingSenderId: "660883664493",
       appId: "1:660883664493:web:369aab25e626c968381964"
     };
-
     firebase.initializeApp(firebaseConfig);
-
     const db = firebase.database();
-    const employeeTableBody = document.getElementById("employeeTableBody");
+
     const filterDept = document.getElementById("filterDept");
     const searchInput = document.getElementById("searchInput");
+    const employeeCardContainer = document.getElementById("employeeCardContainer");
 
     let allEmployees = [];
+    let isAdmin = false;
+    let editingEmpKey = null;
 
-    // ✅ ตรวจสอบผู้ใช้ที่ login แล้วค่อยโหลดข้อมูล
     firebase.auth().onAuthStateChanged(user => {
       if (!user) {
         window.location.href = "login.html";
       } else {
         const uid = user.uid;
-
-        // ตรวจสอบว่า user เป็น admin หรือไม่
         db.ref("users/" + uid + "/role").once("value", snap => {
           if (snap.exists() && snap.val() === "admin") {
+            isAdmin = true;
             document.getElementById("addEmployeeBtn").style.display = "inline-block";
             document.getElementById("adminMenuLink").style.display = "inline-block";
           }
         });
-
-        // ✅ โหลดพนักงานหลัง auth สำเร็จ
         loadEmployees();
       }
     });
@@ -241,7 +232,7 @@
       db.ref("employees").once("value", snapshot => {
         allEmployees = [];
         snapshot.forEach(child => {
-          allEmployees.push(child.val());
+          allEmployees.push({ ...child.val(), key: child.key });
         });
         displayEmployees();
       });
@@ -250,6 +241,7 @@
     function displayEmployees() {
       const dept = filterDept.value.toLowerCase();
       const keyword = searchInput.value.toLowerCase();
+      employeeCardContainer.innerHTML = "";
 
       const filtered = allEmployees.filter(emp => {
         const nameMatch = emp.name?.toLowerCase().includes(keyword) || emp.nickname?.toLowerCase().includes(keyword);
@@ -257,13 +249,30 @@
         return nameMatch && deptMatch;
       });
 
-      employeeTableBody.innerHTML = filtered.map(emp => `
-      <tr>
-        <td>${emp.name || "-"}</td>
-        <td>${emp.nickname || "-"}</td>
-        <td>${emp.department || "-"}</td>
-      </tr>
-    `).join('') || `<tr><td colspan="3" class="text-center">ไม่พบพนักงาน</td></tr>`;
+      if (filtered.length === 0) {
+        employeeCardContainer.innerHTML = `<div class="text-center text-white mt-4">ไม่พบพนักงาน</div>`;
+        return;
+      }
+
+      filtered.forEach(emp => {
+        const card = document.createElement("div");
+        card.className = "col-md-4 mb-3";
+        const manageBtns = isAdmin
+          ? `<div class="mt-2">
+              <button class="btn btn-sm btn-warning me-2" onclick="editEmployee('${emp.key}')">📝 แก้ไข</button>
+              <button class="btn btn-sm btn-danger" onclick="deleteEmployee('${emp.key}')">🗑️ ลบ</button>
+            </div>` : "";
+
+        card.innerHTML = `
+          <div class="card p-3 shadow-sm">
+            <h5 class="mb-1">👤 ${emp.nickname || "-"}</h5>
+            <p class="mb-1">❤️ ${emp.name || "-"}</p>
+            <p class="mb-0">📅 แผนก: ${emp.department || "-"}</p>
+            ${manageBtns}
+          </div>
+        `;
+        employeeCardContainer.appendChild(card);
+      });
     }
 
     function showAddModal() {
@@ -273,6 +282,7 @@
     function hideAddModal() {
       document.getElementById("addModal").style.display = "none";
       document.getElementById("addForm").reset();
+      editingEmpKey = null;
     }
 
     document.getElementById("addForm").addEventListener("submit", async (e) => {
@@ -281,22 +291,40 @@
       const nickname = document.getElementById("empNickname").value;
       const department = document.getElementById("empDept").value;
 
-      await db.ref("employees").push({
-        name, nickname, department, createdAt: new Date().toISOString()
-      });
+      const data = { name, nickname, department, updatedAt: new Date().toISOString() };
+      if (editingEmpKey) {
+        await db.ref("employees/" + editingEmpKey).update(data);
+        editingEmpKey = null;
+      } else {
+        await db.ref("employees").push({ ...data, createdAt: new Date().toISOString() });
+      }
 
       hideAddModal();
       loadEmployees();
     });
 
+    function editEmployee(key) {
+      const emp = allEmployees.find(e => e.key === key);
+      if (!emp) return;
+      editingEmpKey = key;
+      document.getElementById("empName").value = emp.name || "";
+      document.getElementById("empNickname").value = emp.nickname || "";
+      document.getElementById("empDept").value = emp.department || "";
+      showAddModal();
+    }
+
+    function deleteEmployee(key) {
+      if (confirm("คุณแน่ใจหรือไม่ว่าต้องการลบพนักงานคนนี้?")) {
+        db.ref("employees/" + key).remove().then(() => loadEmployees());
+      }
+    }
+
     filterDept.addEventListener("change", displayEmployees);
     searchInput.addEventListener("input", displayEmployees);
-
     document.getElementById("logoutBtn").addEventListener("click", () => {
       firebase.auth().signOut().then(() => location.href = "login.html");
     });
   </script>
-
 </body>
 
 </html>

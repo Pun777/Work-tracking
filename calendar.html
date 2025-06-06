@@ -15,15 +15,29 @@
   <style>
     body {
       font-family: 'Prompt', sans-serif;
-      background-image: url('green.jpg');
+      background-image: url('green.png');
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
       margin: 0;
+      color: #333;
+    }
+
+    .background-image-blur {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-image: url('green.png');
+      background-size: cover;
+      background-position: center;
+      filter: blur(8px) brightness(0.6);
+      z-index: -1;
     }
 
     header {
-      background-color: #2ee75d;
+      background-color: #5b9b0860;
       padding: 1rem 2rem;
       display: flex;
       justify-content: space-between;
@@ -32,77 +46,87 @@
       box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
     }
 
-    a {
-      margin-left: 1rem;
-      font-weight: 500;
-      color: black;
-      text-decoration: none;
+    h1 {
+      font-size: 3rem;
+      color: #a85304;
+      margin-bottom: 1rem;
     }
 
-    #calendar {
-      max-width: 1024px;
-      margin: 2.5rem auto;
-      background: rgba(255, 250, 250, 0.445);
-      padding: 1.5rem;
-      border-radius: 12px;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    }
+      nav a {
+        margin-left: 1rem;
+        font-weight: 500;
+        color: rgba(238, 126, 7, 0.765);
+        text-decoration: none;
+      }
 
-    .fc-daygrid-event {
-      display: block;
-      border-radius: 6px;
-      padding: 4px 8px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      margin-bottom: 3px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
-    }
+      a:hover {
+        text-decoration: underline;
+      }
 
-    .fc-status-✅ {
-      background-color: #c8e6c9;
-      border: 1px solid #66bb6a;
-    }
+      #calendar {
+        max-width: 1024px;
+        margin: 2.5rem auto;
+        background: rgba(255, 250, 250, 0.445);
+        padding: 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      }
 
-    .fc-status-⚠️ {
-      background-color: #fff9c4;
-      border: 1px solid #fbc02d;
-    }
+      .fc-daygrid-event {
+        display: block;
+        border-radius: 6px;
+        padding: 4px 8px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-bottom: 3px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+      }
 
-    .fc-status-⏳ {
-      background-color: #b3e5fc;
-      border: 1px solid #29b6f6;
-    }
+      .fc-status-✅ {
+        background-color: #c8e6c9;
+        border: 1px solid #66bb6a;
+      }
 
-    .fc-status-❌ {
-      background-color: #ffcdd2;
-      border: 1px solid #ef5350;
-    }
+      .fc-status-⚠️ {
+        background-color: #fff9c4;
+        border: 1px solid #fbc02d;
+      }
 
-    .fc-col-header-cell {
-      background-color: #c8e6c9;
-      color: #1b5e20;
-    }
+      .fc-status-⏳ {
+        background-color: #b3e5fc;
+        border: 1px solid #29b6f6;
+      }
 
-    .fc-toolbar-title {
-      font-size: 1.3rem;
-      font-weight: bold;
-      color: #1b5e20;
-    }
+      .fc-status-❌ {
+        background-color: #ffcdd2;
+        border: 1px solid #ef5350;
+      }
 
-    .fc-button {
-      background-color: #43a047 !important;
-      border: none !important;
-      border-radius: 6px !important;
-      font-size: 0.9rem;
-      padding: 0.4rem 0.9rem !important;
-    }
+      .fc-col-header-cell {
+        background-color: #c8e6c9;
+        color: #af6005;
+      }
 
-    .fc-button:hover {
-      background-color: #2e7d32 !important;
-    }
+      .fc-toolbar-title {
+        font-size: 1.3rem;
+        font-weight: bold;
+        color:  #9e4204;
+      }
+
+      .fc-button {
+        background-color: #9e4204 !important;
+        border: none !important;
+        border-radius: 6px !important;
+        font-size: 0.9rem;
+        padding: 0.4rem 0.9rem !important;
+      }
+
+      .fc-button:hover {
+        background-color: #2e7d32 !important;
+      }
   </style>
 </head>
 

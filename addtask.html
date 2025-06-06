@@ -14,7 +14,7 @@
   <style>
     body {
       font-family: 'Prompt', sans-serif;
-      background-image: url('green.jpg');
+      background-image: url('green.png');
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
@@ -22,8 +22,22 @@
       color: #333;
     }
 
+    /* 🔷 พื้นหลังเบลอ */
+    .background-image-blur {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-image: url('green.png');
+      background-size: cover;
+      background-position: center;
+      filter: blur(8px) brightness(0.6);
+      z-index: -1;
+    }
+
     header {
-      background-color: #2ee75d;
+      background-color: #5b9b0860;
       padding: 1rem 2rem;
       display: flex;
       justify-content: space-between;
@@ -32,12 +46,14 @@
       box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
     }
 
+
     nav a {
       margin-left: 1rem;
       font-weight: 500;
-      color: black;
+      color: rgba(238, 126, 7, 0.765);
       text-decoration: none;
     }
+
 
     .container {
       max-width: 1200px;
@@ -98,6 +114,7 @@
 </head>
 
 <body>
+  <div class="background-image-blur"></div>
   <header>
     <h1 style="margin: 0; font-size: 1.8rem;">Tracking</h1>
     <nav>

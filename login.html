@@ -1,52 +1,92 @@
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>เข้าสู่ระบบ - Tracking </title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>เข้าสู่ระบบ - Tracking</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;600&display=swap" rel="stylesheet" />
 
   <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
-</head>
-<body class="bg-blue-50 flex items-center justify-center min-h-screen"
-><style> body {
+  <style>
+    body {
       font-family: 'Prompt', sans-serif;
-      background-image: url('green.jpg');
+      background-image: url('green.png');
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
       margin: 0;
       color: #333;
     }
-</style>
 
 
-  <div class="bg-white shadow-xl rounded-xl p-8 w-full max-w-md">
-    <h1 class="text-2xl font-bold text-center text-blue-700 mb-6">Tracking Login</h1>
+    .background-image-blur {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-image: url('green.png');
+      background-size: cover;
+      background-position: center;
+      filter: blur(8px) brightness(0.6);
+      z-index: -1;
+    }
+
+    .glass-card {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: white;
+    }
+
+    label {
+      color: white;
+    }
+
+    input {
+      background-color: rgba(255, 255, 255, 0.7);
+    }
+  </style>
+</head>
+
+<body class="flex items-center justify-center min-h-screen">
+  <div class="background-image-blur"></div>
+
+  <div class="glass-card w-full max-w-md">
+    <h1 class="text-2xl font-bold text-center text-#a85304-300 mb-6">Tracking Login</h1>
 
     <form id="authForm" class="space-y-4">
       <div>
-        <label for="email" class="block text-sm font-medium text-gray-700">อีเมล</label>
-        <input type="email" id="email" required class="mt-1 block w-full px-4 py-2 border rounded-md"/>
+        <label for="email" class="block text-sm font-medium">อีเมล</label>
+        <input type="email" id="email" required class="mt-1 block w-full px-4 py-2 border rounded-md" />
       </div>
 
       <div>
-        <label for="password" class="block text-sm font-medium text-gray-700">รหัสผ่าน</label>
-        <input type="password" id="password" required class="mt-1 block w-full px-4 py-2 border rounded-md"/>
+        <label for="password" class="block text-sm font-medium">รหัสผ่าน</label>
+        <input type="password" id="password" required class="mt-1 block w-full px-4 py-2 border rounded-md" />
       </div>
 
       <div>
-        <button type="submit" id="loginBtn" class="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700">เข้าสู่ระบบ</button>
-        <button type="button" id="signupBtn" class="w-full bg-green-600 text-white py-2 mt-2 rounded-md hover:bg-green-700">สมัครสมาชิก</button>
-        <button type="button" id="googleBtn" class="w-full bg-red-600 text-white py-2 mt-2 rounded-md hover:bg-red-700">เข้าสู่ระบบด้วย Google</button>
+        <button type="submit" id="loginBtn"
+          class="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700">เข้าสู่ระบบ</button>
+        <button type="button" id="signupBtn"
+          class="w-full bg-green-600 text-white py-2 mt-2 rounded-md hover:bg-green-700">สมัครสมาชิก</button>
+        <button type="button" id="googleBtn"
+          class="w-full bg-red-600 text-white py-2 mt-2 rounded-md hover:bg-red-700">เข้าสู่ระบบด้วย Google</button>
       </div>
     </form>
 
-    <p id="errorMsg" class="text-red-600 text-sm mt-4 text-center hidden"></p>
+    <p id="errorMsg" class="text-red-300 text-sm mt-4 text-center hidden"></p>
   </div>
 
   <script>
@@ -79,10 +119,10 @@
         if (role === 'admin') {
           window.location.href = 'admin.html';
         } else {
-          window.location.href = '  index.html';
+          window.location.href = 'index.html';
         }
       } else {
-        const isAdminEmail = user.email === "pan552211@gmail.com"; // 👈 แก้ตรงนี้เป็นอีเมลแอดมินของคุณ
+        const isAdminEmail = user.email === "pan552211@gmail.com"; // 👈 เปลี่ยนตรงนี้ถ้าต้องการ
         await userRef.set({
           email: user.email,
           role: isAdminEmail ? "admin" : "user"
@@ -113,7 +153,7 @@
       try {
         const result = await auth.createUserWithEmailAndPassword(email, password);
         const uid = result.user.uid;
-        const isAdminEmail = result.user.email === "pan552211@gmail.com"; // 👈 แก้ตรงนี้เป็นอีเมลแอดมิน
+        const isAdminEmail = result.user.email === "pan552211@gmail.com"; // 👈 เปลี่ยนตรงนี้ถ้าต้องการ
         await db.ref('users/' + uid).set({
           email: result.user.email,
           role: isAdminEmail ? "admin" : "user"
@@ -137,4 +177,5 @@
     });
   </script>
 </body>
+
 </html>
