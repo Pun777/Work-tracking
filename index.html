@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -16,16 +17,20 @@
       margin: 0;
       color: #333;
     }
+
     .background-image-blur {
       position: fixed;
-      top: 0; left: 0;
-      width: 100vw; height: 100vh;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
       background-image: url('green.png');
       background-size: cover;
       background-position: center;
       filter: blur(8px) brightness(0.6);
       z-index: -1;
     }
+
     header {
       background-color: #5b9b0860;
       padding: 1rem 2rem;
@@ -33,20 +38,26 @@
       justify-content: space-between;
       align-items: center;
       border-radius: 0 0 12px 12px;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
     }
+
     nav a {
       margin-left: 2.5rem;
       font-weight: 500;
       color: white;
       text-decoration: none;
     }
+
     main {
       padding: 2rem;
       max-width: 1000px;
       margin: auto;
     }
-    h1, h2 { color: #fff; }
+
+    h1,
+    h2 {
+      color: #fff;
+    }
 
     .status-flex {
       display: flex;
@@ -56,12 +67,14 @@
       align-items: flex-start;
       margin-top: 1rem;
     }
+
     #status-cards {
       display: flex;
       flex-wrap: wrap;
       gap: 1rem;
       justify-content: center;
     }
+
     .status-card {
       background: rgba(255, 255, 255, 0.575);
       padding: 1rem 1.5rem;
@@ -78,6 +91,7 @@
       gap: 1rem;
       margin-bottom: 1rem;
     }
+
     .filter-select select,
     .filter-select input {
       padding: 0.5rem 1rem;
@@ -86,6 +100,7 @@
       border: 1px solid #999;
       background: #fff;
     }
+
     table {
       width: 100%;
       border-collapse: collapse;
@@ -94,26 +109,33 @@
       border-radius: 12px;
       overflow: hidden;
     }
-    thead, tbody tr {
+
+    thead,
+    tbody tr {
       display: table;
       width: 100%;
       table-layout: fixed;
     }
+
     tbody {
       display: block;
       max-height: 300px;
       overflow-y: auto;
     }
-    th, td {
+
+    th,
+    td {
       padding: 0.8rem 1rem;
       border-bottom: 1px solid #ccc;
       text-align: left;
     }
+
     tr:hover {
       background-color: rgba(255, 255, 255, 0.3);
     }
   </style>
 </head>
+
 <body>
   <div class="background-image-blur"></div>
 
@@ -150,11 +172,12 @@
         <select id="departmentFilter" onchange="filterTasks()">
           <option value="all">ทุกแผนก</option>
           <option value="IT">ไอที</option>
-          <option value="OP">โอพี</option>
-          <option value="Sales">เซลล์</option>
-          <option value="Account">บัญชี</option>
-          <option value="Ticket">ตั๋ว</option>
-          <option value="Executive">ผู้บริหาร</option>
+          <option value="โอพี">โอพี</option>
+          <option value="เซลล์">เซลล์</option>
+          <option value="บัญชี">บัญชี</option>
+          <option value="ตั๋ว">ตั๋ว</option>
+          <option value="ผู้บริหาร">ผู้บริหาร</option>
+         
         </select>
         <input type="text" id="assigneeSearch" placeholder="ค้นหาผู้รับผิดชอบ" oninput="filterTasks()" />
         <input type="text" id="reporterSearch" placeholder="ค้นหาผู้แจ้ง" oninput="filterTasks()" />
@@ -279,4 +302,5 @@
     }
   </script>
 </body>
+
 </html>
