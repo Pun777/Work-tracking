@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="th">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,31 +8,24 @@
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
-
   <style>
     body {
       font-family: 'Prompt', sans-serif;
-      background-image: url('green.jpg');
+      background: url('green.jpg') no-repeat center center fixed;
       background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
       margin: 0;
       color: #333;
     }
-
     .background-image-blur {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
       background-image: url('green.png');
       background-size: cover;
       background-position: center;
       filter: blur(8px) brightness(0.6);
       z-index: -1;
     }
-
     header {
       background-color: #5b9b0860;
       padding: 1rem 2rem;
@@ -41,48 +33,43 @@
       justify-content: space-between;
       align-items: center;
       border-radius: 0 0 12px 12px;
-      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
     }
-
     nav a {
       margin-left: 2.5rem;
       font-weight: 500;
-      color: rgb(255, 255, 255);
+      color: white;
       text-decoration: none;
     }
-
     main {
       padding: 2rem;
-      max-width: 1200px;
+      max-width: 1000px;
       margin: auto;
     }
+    h1, h2 { color: #fff; }
 
-    section {
-      margin-bottom: 2.5rem;
+    .status-flex {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+      align-items: flex-start;
+      margin-top: 1rem;
     }
-
-    h1 {
-      font-size: 3rem;
-      color: #ffffff;
-      margin-bottom: 1rem;
+    #status-cards {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
     }
-
-    section h2 {
-      font-size: 2.5rem;
-      color: #ffffff;
-      margin-bottom: 1rem;
-    }
-
     .status-card {
-      display: inline-block;
       background: rgba(255, 255, 255, 0.575);
       padding: 1rem 1.5rem;
       border-radius: 12px;
-      margin: 0.5rem;
       text-align: center;
-      min-width: 140px;
-      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+      min-width: 160px;
       backdrop-filter: blur(4px);
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
     }
 
     .filter-select {
@@ -91,62 +78,42 @@
       gap: 1rem;
       margin-bottom: 1rem;
     }
-
     .filter-select select,
-    .filter-select input[type="text"],
-    .filter-select input[type="date"] {
+    .filter-select input {
       padding: 0.5rem 1rem;
       border-radius: 8px;
       font-size: 1rem;
-      font-weight: 500;
       border: 1px solid #999;
       background: #fff;
     }
-
     table {
       width: 100%;
       border-collapse: collapse;
       background-color: rgba(255, 255, 255, 0.5);
       backdrop-filter: blur(4px);
-      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
       border-radius: 12px;
       overflow: hidden;
     }
-
-    thead,
-    tbody tr {
+    thead, tbody tr {
       display: table;
       width: 100%;
       table-layout: fixed;
     }
-
     tbody {
       display: block;
       max-height: 300px;
       overflow-y: auto;
     }
-
-    th,
-    td {
-      padding: 0.9rem 1.2rem;
-      border-bottom: 1px solid #e0e0e0;
+    th, td {
+      padding: 0.8rem 1rem;
+      border-bottom: 1px solid #ccc;
       text-align: left;
-      font-size: 0.95rem;
     }
-
-    th {
-      background-color: rgba(227, 242, 253, 0.8);
-      font-weight: 600;
-      color: #0a0a0a;
-      backdrop-filter: blur(4px);
-    }
-
     tr:hover {
       background-color: rgba(255, 255, 255, 0.3);
     }
   </style>
 </head>
-
 <body>
   <div class="background-image-blur"></div>
 
@@ -165,7 +132,9 @@
   <main>
     <section id="work-summary">
       <h2>สรุปสถานะงาน</h2>
-      <div id="status-cards"></div>
+      <div class="status-flex">
+        <div id="status-cards"></div>
+      </div>
     </section>
 
     <section id="delayed-tasks">
@@ -190,7 +159,6 @@
         <input type="text" id="assigneeSearch" placeholder="ค้นหาผู้รับผิดชอบ" oninput="filterTasks()" />
         <input type="text" id="reporterSearch" placeholder="ค้นหาผู้แจ้ง" oninput="filterTasks()" />
         <input type="date" id="startDateFilter" onchange="filterTasks()" />
-        
       </div>
 
       <table id="delayed-table">
@@ -225,9 +193,8 @@
     let allTasks = [];
 
     firebase.auth().onAuthStateChanged(user => {
-      if (!user) {
-        window.location.href = "login.html";
-      } else {
+      if (!user) location.href = "login.html";
+      else {
         db.ref("users/" + user.uid).once("value").then(snapshot => {
           if (snapshot.val()?.role === "admin") {
             document.getElementById("adminMenuLink").style.display = "inline-block";
@@ -241,99 +208,75 @@
     });
 
     db.ref("tasks").on("value", snapshot => {
-      const tasks = snapshot.val();
-      allTasks = Object.values(tasks || {});
+      allTasks = Object.values(snapshot.val() || {});
       renderStatusCards(allTasks);
       filterTasks();
     });
 
-    function renderDelayedTable(taskList) {
-      const tbody = document.querySelector("#delayed-table tbody");
-      tbody.innerHTML = "";
-      const now = new Date();
-      taskList.forEach(task => {
-        const endDate = new Date(task.endDate);
-        const status = task.status || "⏳";
-        if (endDate < now || status !== "✅") {
-          tbody.innerHTML += `
-        <tr>
-          <td>${task.taskName}</td>
-          <td>${task.assigneeName} (${task.department})</td>
-          <td>${task.reporter || "-"}</td>
-          <td>${task.startDate}</td>
-          <td>${task.endDate}</td>
-          <td>${status}</td>
-        </tr>
-      `;
-        }
-      });
-    }
-
-
     function renderStatusCards(taskList) {
-      const summary = { "❌": 0, "⏳": 0, "⚠️": 0 };
-      const labels = {
-        "❌": "ยังไม่เริ่ม",
-        "⏳": "รอดำเนินการ",
-        "⚠️": "กำลังดำเนินการ"
-      };
+      const counts = { "❌": 0, "⏳": 0, "⚠️": 0, "✅": 0 };
       taskList.forEach(task => {
-        const status = task.status || "⏳";
-        if (summary[status] !== undefined) summary[status]++;
+        const s = task.status || "⏳";
+        if (counts[s] !== undefined) counts[s]++;
       });
+
+      const cardData = [
+        { icon: "❌", label: "ยังไม่เริ่ม", color: "#e57373" },
+        { icon: "⏳", label: "รอดำเนินการ", color: "#ffd54f" },
+        { icon: "⚠️", label: "กำลังดำเนินการ", color: "#64b5f6" },
+        { icon: "✅", label: "เสร็จแล้ว", color: "#81c784" }
+      ];
+
       const container = document.getElementById("status-cards");
       container.innerHTML = "";
-      for (let status in summary) {
-        container.innerHTML += `
-          <div class="status-card">
-            <h3>${status}</h3>
-            <p>${summary[status]} งาน</p>
-            <small>${labels[status]}</small>
+      cardData.forEach(({ icon, label, color }) => {
+        const count = counts[icon] || 0;
+        const card = `
+          <div class="status-card" style="border-top: 6px solid ${color}">
+            <div style="font-size: 2rem;">${icon}</div>
+            <div style="font-size: 1.25rem; font-weight: bold;">${count} งาน</div>
+            <div style="opacity: 0.8;">${label}</div>
           </div>
         `;
-      }
+        container.innerHTML += card;
+      });
     }
 
     function filterTasks() {
-      const statusFilter = document.getElementById("statusFilter").value;
-      const deptFilter = document.getElementById("departmentFilter").value;
-      const assigneeSearch = document.getElementById("assigneeSearch").value.trim().toLowerCase();
-      const reporterSearch = document.getElementById("reporterSearch").value.trim().toLowerCase();
-      const startDateFilter = document.getElementById("startDateFilter").value;
+      const fStatus = document.getElementById("statusFilter").value;
+      const fDept = document.getElementById("departmentFilter").value;
+      const fAssignee = document.getElementById("assigneeSearch").value.trim().toLowerCase();
+      const fReporter = document.getElementById("reporterSearch").value.trim().toLowerCase();
+      const fDate = document.getElementById("startDateFilter").value;
 
-      let filtered = allTasks;
-
-      if (statusFilter !== "all") {
-        filtered = filtered.filter(task => (task.status || "⏳") === statusFilter);
+      let list = allTasks;
+      if (fStatus !== "all") {
+        list = list.filter(t => (t.status || "⏳") === fStatus);
       }
 
-      if (deptFilter !== "all") {
-        filtered = filtered.filter(task => task.department === deptFilter);
+      if (fDept !== "all") list = list.filter(t => t.department === fDept);
+      if (fAssignee) list = list.filter(t => t.assigneeName?.toLowerCase().includes(fAssignee));
+      if (fReporter) list = list.filter(t => t.reporter?.toLowerCase().includes(fReporter));
+      if (fDate) {
+        const sDate = new Date(fDate);
+        list = list.filter(t => new Date(t.startDate) >= sDate);
       }
 
-      if (assigneeSearch !== "") {
-        filtered = filtered.filter(task =>
-          task.assigneeName?.toLowerCase().includes(assigneeSearch)
-        );
-      }
-
-      filtered = filtered.filter(task =>
-        task.reporter?.toLowerCase().includes(reporterSearch)
-      );
-
-
-
-      if (startDateFilter !== "") {
-        const startDate = new Date(startDateFilter);
-        filtered = filtered.filter(task => {
-          const taskStart = new Date(task.startDate);
-          return taskStart >= startDate;
-        });
-      }
-
-      renderDelayedTable(filtered);
+      const tbody = document.querySelector("#delayed-table tbody");
+      tbody.innerHTML = "";
+      list.forEach(task => {
+        tbody.innerHTML += `
+          <tr>
+            <td>${task.taskName || "-"}</td>
+            <td>${task.assigneeName || "-"} (${task.department || "-"})</td>
+            <td>${task.reporter || "-"}</td>
+            <td>${task.startDate || "-"}</td>
+            <td>${task.endDate || "-"}</td>
+            <td>${task.status || "⏳"}</td>
+          </tr>
+        `;
+      });
     }
   </script>
 </body>
-
 </html>
